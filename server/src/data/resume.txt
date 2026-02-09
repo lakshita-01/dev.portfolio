@@ -1,0 +1,77 @@
+
+
+LAKSHITA GUPTA
+ML ENGINEER/SOFTWARE/WEB DEVELOPER
++91 8178884391
+lakshitagupta9@gmail.com
+in/lakshita-gupta01
+github.com/lakshita-01
+PROJECT
+SUMMARY
+ 
+EDUCATION
+ 
+EXPERIENCE
+               Guru Gobind Singh Indraprastha University                                                                                                                                                      Jul 2023-May 2027
+Dynamic web developer specializing in full-stack development with a focus on AI integration, currently transitioning into a machine
+learning engineer role. Expertise includes the MERN stack, Machine Learning, Deep Learning, and NLP, utilizing a variety of advanced
+tools. Committed to creating scalable, user-centric products that drive innovation and meet evolving market demands.
+Bachelor Of Technology   (Computer Science & Engineering))
+ SKILLS
+LANGUAGES: C++, PYTHON
+DATABASE: MY SQL, Postgres SQL, MongoDB
+WEB TECHNOLOGIES: HTML/CSS, React, Node/Express.js, REST API
+CONCEPTS: OOPs, Data Structures
+VERSION CONTROL: GIT, GITHUB
+MACHINE LEARNING: Supervised & Unsupervised Learning, Model Evaluation, Feature Engineering
+DEEP LEARNING: Neural Networks, CNNs (basic), Transfer Learning
+NLP: Tokenization, TF-IDF, Word Embeddings
+FRAMEWORK: Scikit-learn, TensorFlow / PyTorch, NumPy, Pandas, Matplotlib
+TOOLS: POSTMAN, VS CODE, STREAMLIT
+INTRAPERSONAL: Communication, Time Management, Adaptability, Problem-Solving, Emotional
+Intelligence
+INTERPERSONAL: Teamwork, Conflict Resolution, Leadership, Collaboration, Training
+Implemented modern frameworks, enhancing development speed by 40%.
+Crafted responsive web designs that boosted user engagement by 30%.
+Integrated APIs seamlessly, enriching user experience with dynamic content.
+Streamlined codebase by refactoring UI/UX for improved performance and maintainability.
+Utilized version control tools like Git to manage code effectively within a team environment, reducing merge conflicts and
+fostering collaboration.
+Frontend Developer, Edunet Foundation (Remote)
+Aug 2025-Sep 2025
+SDE Intern, BLUESTOCK FINTECH (Remote)
+Cutted page load by ~18% via code-splitting and lazy loading.
+Built and tuned Node.js endpoints; indexed PostgreSQL queries to reduce API latency ~28% and lower error rate by ~20%.
+Secured access with JWT auth, and strict input validation, eliminating auth-related QA defects.
+Created 12+ reusable UI components and added unit/API tests (Postman), reducing regressions in CI by ~30%.
+Streamlined Git workflows (branch strategy) to speed up reviews.
+July 2025 - Aug 2025
+1. EMPLOYEE ATTRITION RISK PREDICTION
+       https://github.com/lakshita-01/Employee_Attrition_Risk_Analysis.git.
+Analyzes the HR data of over 1k+ rows (Kaggle dataset) & identifies complex patterns in demographics, compensation,
+and satisfaction that lead to attrition.
+High ROC-AUC value: The model can distinguish between employees who will attrite vs who won’t with 82.7% accuracy.
+High Performance ML: Uses calibrated XGBoost model for better prediction accuracy.
+Interactive Dashboard: Streamlit-based UI for easy scenario testing by non-technical HR managers.
+Pre-processing Pipeline: Robust handling of categorical data and feature scaling.
+2. E-COM WEBSITE
+       https://github.com/lakshita-01/e-com-website
+Designed and built a responsive e-commerce platform enabling product discovery, purchase, and admin management.
+Implemented secure user registration/login and role-based access control.
+Developed product catalog with details, search/sort, and filters.
+Built shopping cart and checkout flow; created admin panel to manage users, products, and orders.
+3. IPO WEBAPP
+       https://github.com/lakshita-01/ipo-webapp
+Built a responsive IPO listing interface using Django, React and Tailwind CSS.
+Consumed REST APIs to display live data with search, sort, filters, and pagination.
+Created modular components and client-side caching to improve navigation and UX.
+customised admin dashboard for easy CRUD operations
+Won Third position in Hack&Chill Hackathon
+Open-source contributor at Gssoc'25 and OSCG'26
+Participant in the GDG on Campus Solution Challenge powered by Hack2Skill
+Oracle Certified Gen AI Professional Certificate
+Develop GenAI Apps with Gemini and Streamlit Skill Badge
+Completion Certification for Gen AI Exchange Program by Google Cloud
+Postman API Fundamentals Student Expert certification
+A1 certificate holder in German language.
+ ACHIEVEMENTS

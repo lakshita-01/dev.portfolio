@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* Light mode */
+body {
+  @apply bg-vibrant-lightBg text-gray-900 font-sans antialiased selection:bg-vibrant-light-purple/20 transition-colors duration-300;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* Dark mode */
+html.dark body {
+  @apply bg-vibrant-darkBg text-white selection:bg-vibrant-neon-purple/30;
+}
+
+/* Light mode cards */
+.glass-card {
+  @apply bg-white/50 backdrop-blur-lg border border-vibrant-lightCardBorder/30 rounded-2xl transition-all duration-300;
+}
+
+/* Dark mode cards */
+html.dark .glass-card {
+  @apply bg-vibrant-darkCard/40 backdrop-blur-lg border border-vibrant-darkCardBorder/50;
+}
+
+/* Light mode inputs */
+.glass-input {
+  @apply bg-white/60 border border-vibrant-light-purple/30 rounded-xl px-4 py-2 focus:ring-2 focus:ring-vibrant-light-purple outline-none transition-all;
+}
+
+/* Dark mode inputs */
+html.dark .glass-input {
+  @apply bg-vibrant-darkCard/50 border border-vibrant-neon-cyan/30 focus:ring-vibrant-neon-cyan;
+}
+
+/* Gradient text */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-vibrant-light-purple to-vibrant-light-pink transition-all duration-300;
+}
+
+html.dark .text-gradient {
+  @apply bg-gradient-to-r from-vibrant-neon-purple via-vibrant-neon-pink to-vibrant-neon-cyan;
+}
+
+.blackhole-box{
+  position: absolute;
+  top:0;
+  left: 170px;
+  width: 80%;
+  justify-content: center;
+  mix-blend-mode: lighten;
+}
+
+.blackhole-box video{
+  width: 100%;
+  margin-top: -23%;
+  height: auto;
+  opacity: 0.7;
+  pointer-events: none;
+  object-fit: cover;
+}
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Light mode scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(147, 51, 234, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(147, 51, 234, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(147, 51, 234, 0.8);
+}
+
+/* Dark mode scrollbar */
+html.dark ::-webkit-scrollbar-track {
+  background: rgba(168, 85, 247, 0.1);
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.4);
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.7);
+}
+
+/* Glow effect */
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(168, 85, 247, 1);
+  }
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Pulse effect for buttons */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(168, 85, 247, 0);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
