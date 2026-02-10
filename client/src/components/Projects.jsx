@@ -19,7 +19,7 @@ const projects = [
     img: "/images/emp-attrition.jpeg",
     category: "ml",
     repo: "https://github.com/lakshita-01/Employee_Attrition_Risk_Analysis.git",
-    demo: "https://employee-attrition.vercel.app"
+    demo: "https://employee-attrition-risk-analysis.streamlit.app/"
   },
   {
     title: "DevPulse",
