@@ -4,25 +4,31 @@ import { ExternalLink, Github } from 'lucide-react';
 
 const projects = [
   {
-    title: "Neo-Finance Dashboard",
-    desc: "Real-time cryptocurrency tracking platform with sub-ms updates via WebSockets.",
-    tech: ["React", "FastAPI", "WebSockets"],
-    img: "https://images.unsplash.com/photo-1611974717482-9961730bb39c?auto=format&fit=crop&q=80&w=800",
-    category: "web"
+    title: "ColdCraftAI",
+    desc: "AI-based email optimization tool using NLP to improve engagement and personalization..",
+    tech: ["React", "Node", "WebSockets", "MongoDB", "Express", "Tailwind CSS", "Puter.js"],
+    img: "/images/coldcraft.jpeg",
+    category: "web",
+    repo: "https://github.com/lakshita-01/ColdCraftAI.git",
+    demo: "https://cold-craft-ai.vercel.app/"
   },
   {
-    title: "AI MediSync",
+    title: "Employee Attrition Risk Predictor",
     desc: "Healthcare portal utilizing RAG to contextualize patient history for physicians.",
     tech: ["Next.js", "LangChain", "OpenAI"],
-    img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=800",
-    category: "ml"
+    img: "/images/emp-attrition.jpeg",
+    category: "ml",
+    repo: "https://github.com/lakshita-01/Employee_Attrition_Risk_Analysis.git",
+    demo: "https://employee-attrition.vercel.app"
   },
   {
-    title: "EcoLink Logistics",
-    desc: "Route optimization engine reducing carbon emissions by 25% for urban delivery.",
+    title: "DevPulse",
+    desc: "full-stack SaaS application for task management with secure authentication and scalable APIs..",
     tech: ["Node.js", "Google Maps API", "Redis"],
     img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800",
-    category: "web"
+    category: "web",
+    repo: "https://github.com/lakshita-01/devPulse.git",
+    demo: "https://devpulse.vercel.app"
   }
 ];
 
@@ -150,20 +156,26 @@ const Projects = () => {
                 initial={{ opacity: 0 }}
                 whileHover={{ opacity: 1 }}
               >
-                <motion.button
+                <motion.a
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   className="p-3 bg-accent-primary rounded-full text-white hover:bg-accent-secondary transition-colors"
                 >
                   <ExternalLink size={20} />
-                </motion.button>
-                <motion.button
+                </motion.a>
+                <motion.a
+                  href={project.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   className="p-3 bg-accent-secondary rounded-full text-white hover:bg-accent-primary transition-colors"
                 >
                   <Github size={20} />
-                </motion.button>
+                </motion.a>
               </motion.div>
             </div>
             
@@ -221,14 +233,18 @@ const Projects = () => {
               transition={{ delay: 0.25 }}
             >
               <motion.a 
-                href="#" 
+                href={project.repo}
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ x: 5, color: 'rgba(99, 102, 241, 1)' }}
                 className="flex items-center gap-1 text-xs font-bold hover:text-accent-primary transition-colors"
               >
                 <Github size={14} /> REPO
               </motion.a>
               <motion.a 
-                href="#" 
+                href={project.demo}
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ x: 5, color: 'rgba(99, 102, 241, 1)' }}
                 className="flex items-center gap-1 text-xs font-bold hover:text-accent-primary transition-colors"
               >

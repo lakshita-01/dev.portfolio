@@ -129,8 +129,14 @@ if (missingVars.length > 0) {
   process.exit(1);
 }
 
-// Database Connection
-mongoose.connect(process.env.MONGODB_URI)
+// Database Connection with IPv4 preference
+const mongooseOptions = {
+  family: 4, // Force IPv4
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+};
+
+mongoose.connect(process.env.MONGODB_URI, mongooseOptions)
   .then(() => {
     logger.info('MongoDB Connected Successfully');
     createDefaultAdmin();
@@ -158,7 +164,7 @@ const createDefaultAdmin = async () => {
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   logger.info(`Server running on port ${PORT}`, { environment: process.env.NODE_ENV || 'development' });
 });
 

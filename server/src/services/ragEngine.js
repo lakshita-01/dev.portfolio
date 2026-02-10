@@ -3,14 +3,26 @@ require("dotenv").config();
 const { loadResumeText } = require("./resumeLoader");
 
 let resumeContext = "";
+let isLoading = false;
 
-// Load resume once at startup
-(async () => {
-  resumeContext = await loadResumeText();
-})();
+// Lazy load resume when first needed
+const ensureResumeLoaded = async () => {
+  if (!resumeContext && !isLoading) {
+    isLoading = true;
+    try {
+      resumeContext = await loadResumeText();
+    } catch (error) {
+      console.error("Resume load error:", error.message);
+    } finally {
+      isLoading = false;
+    }
+  }
+};
 
 const getChatResponse = async (userMessage) => {
   try {
+    await ensureResumeLoaded();
+    
     const prompt = `
 You are an AI Portfolio Assistant representing Lakshita Gupta.
 
@@ -32,7 +44,7 @@ User Question: ${userMessage}
     return response;
 
   } catch (error) {
-    console.error("Puter AI Error:", error);
+    console.error("Puter AI Error:", error.message);
     return "Unable to respond right now. Please try again later.";
   }
 };
