@@ -204,7 +204,7 @@ const SkillsRadar = () => {
               muted
               playsInline
             >
-              <source src="public/videos/hero-video.mp4" type="video/mp4" />
+              <source src="/videos/hero-video.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
