@@ -15,7 +15,8 @@ const AIChat = () => {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
 
-  const API_URL = 'http://localhost:5000/api/chat/query';
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const CHAT_ENDPOINT = `${API_URL}/api/chat/query`;
 
   useEffect(() => {
     if (scrollRef.current && scrollRef.current.lastElementChild) {
@@ -46,7 +47,7 @@ const AIChat = () => {
     try {
       // Try Backend RAG first
       try {
-        const res = await axios.post(API_URL, { message: userMsg });
+        const res = await axios.post(CHAT_ENDPOINT, { message: userMsg });
         if (res.data && res.data.reply && !res.data.reply.includes("demo mode")) {
           setMessages(prev => [...prev, { role: 'ai', content: res.data.reply }]);
           setLoading(false);
@@ -59,18 +60,23 @@ const AIChat = () => {
       // Fallback to Puter AI with full context if backend fails or is in demo mode
       const response = await window.puter.ai.chat(
         `You are an expert AI Portfolio Assistant representing Lakshita Gupta.
-        Lakshita is an ML Engineer/Software/Web Developer.
-        Education: B.Tech in CSE from GGSIPU (2023-2027).
-        Experience: SDE Intern at Bluestock Fintech, Frontend Developer at Edunet Foundation.
-        Skills: C++, Python, MERN Stack, ML/DL (TensorFlow, PyTorch), NLP, PostgreSQL, MongoDB.
-        Projects: Employee Attrition Risk Prediction (82.7% accuracy), E-com Website, IPO Webapp.
-        Awards: 3rd in Hack&Chill Hackathon.
-
-        If information is not here, say it's not in the resume and suggest contacting her at lakshitagupta9@gmail.com.
-
-        Do not suggest drafting detailed write-ups, sample repository READMEs, or any portfolio-related services.
-
-        User message: ${userMsg}`
+        
+        RESUME SUMMARY:
+        - Education: B.Tech CSE at GGSIPU (2023-2027), CGPA: 8.5
+        - Experience: SDE Intern at Bluestock Fintech, Frontend Developer at Edunet Foundation
+        - Skills: C++, Python, JavaScript, React, Node.js, Express, MongoDB, PostgreSQL, TensorFlow, PyTorch, NLP, ML/DL
+        - Projects: SaaS Cold Email Optimizer, Project Management Dashboard, Employee Attrition Risk Analysis (82.7% accuracy)
+        - Awards: 3rd place Hack&Chill Hackathon, Open-source contributor (Gssoc'25, OSCG'26), GDG Solution Challenge participant
+        - Certifications: A1 German, Google Cloud, AWS, TensorFlow Developer
+        - lakshita is looking for roles like ml engineer or software engineer or web developer(frontend/backend/fullstack) roles for fulltime/internship.
+        
+        RULES:
+        - Answer ONLY from this resume content
+        - If info not available, say: "That information is not in the resume. Contact Lakshita at lakshitagupta9@gmail.com"
+        - Be concise and professional
+        - Do NOT suggest drafting services or portfolio improvements
+        
+        User Question: ${userMsg}`
       );
       setMessages(prev => [...prev, { role: 'ai', content: response.toString() }]);
     } catch (err) {
