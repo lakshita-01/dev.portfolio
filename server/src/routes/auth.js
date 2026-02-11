@@ -99,38 +99,32 @@ router.post('/register', [
   }
 });
 
-// Book call endpoint - integrates with Google Calendar
+// Book call endpoint
 router.post('/book-call', async (req, res) => {
   const { date, time, duration, purpose, recruiterName, recruiterEmail } = req.body;
 
+  console.log('[Book Call] Request received:', { date, time, recruiterName, recruiterEmail });
+
   try {
-    // Validate required fields
     if (!date || !time || !purpose || !recruiterName || !recruiterEmail) {
+      console.log('[Book Call] Missing fields');
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    // Try to send confirmation emails if credentials are configured
     const emailUser = process.env.EMAIL_USER;
     const emailPassword = process.env.EMAIL_PASSWORD;
 
-    if (emailUser && emailPassword && emailUser !== 'your-email@gmail.com' && emailPassword !== 'your-app-password') {
+    if (emailUser && emailPassword && emailUser !== 'your-email@gmail.com') {
       try {
         const transporter = nodemailer.createTransport({
           service: 'gmail',
-          auth: {
-            user: emailUser,
-            pass: emailPassword
-          },
-          debug: true,
-          logger: true
+          auth: { user: emailUser, pass: emailPassword }
         });
 
-        // Verify connection
         await transporter.verify();
-        console.log('Email service verified successfully');
+        console.log('[Book Call] Email verified');
 
-        // Email to recruiter
-        const recruiterMailOptions = {
+        await transporter.sendMail({
           from: emailUser,
           to: recruiterEmail,
           subject: 'Call Scheduled with Lakshita Gupta',
@@ -138,65 +132,48 @@ router.post('/book-call', async (req, res) => {
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h2>Call Confirmed! 🎉</h2>
               <p>Hi ${recruiterName},</p>
-              <p>Your call with Lakshita Gupta has been scheduled. Here are the details:</p>
+              <p>Your call with Lakshita Gupta has been scheduled:</p>
               <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <p><strong>Date:</strong> ${new Date(date).toLocaleDateString()}</p>
                 <p><strong>Time:</strong> ${time}</p>
                 <p><strong>Duration:</strong> ${duration} minutes</p>
                 <p><strong>Purpose:</strong> ${purpose}</p>
               </div>
-              <p>Looking forward to connecting!</p>
               <p>Best regards,<br>Lakshita Gupta</p>
             </div>
           `
-        };
+        });
 
-        // Email to Lakshita (notification)
-        const lakshitaMailOptions = {
+        await transporter.sendMail({
           from: emailUser,
           to: 'lakshitagupta9@gmail.com',
-          subject: `New Call Scheduled - ${recruiterName}`,
+          subject: `New Call - ${recruiterName}`,
           html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="font-family: Arial, sans-serif;">
               <h2>New Call Booked 📞</h2>
-              <p>You have a new call scheduled:</p>
-              <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                <p><strong>Name:</strong> ${recruiterName}</p>
-                <p><strong>Email:</strong> ${recruiterEmail}</p>
-                <p><strong>Date:</strong> ${new Date(date).toLocaleDateString()}</p>
-                <p><strong>Time:</strong> ${time}</p>
-                <p><strong>Duration:</strong> ${duration} minutes</p>
-                <p><strong>Purpose:</strong> ${purpose}</p>
-              </div>
+              <p><strong>Name:</strong> ${recruiterName}</p>
+              <p><strong>Email:</strong> ${recruiterEmail}</p>
+              <p><strong>Date:</strong> ${new Date(date).toLocaleDateString()}</p>
+              <p><strong>Time:</strong> ${time}</p>
+              <p><strong>Duration:</strong> ${duration} minutes</p>
+              <p><strong>Purpose:</strong> ${purpose}</p>
             </div>
           `
-        };
+        });
 
-        // Send emails
-        const recruiterResult = await transporter.sendMail(recruiterMailOptions);
-        console.log('Recruiter email sent:', recruiterResult.messageId);
-
-        const lakshitaResult = await transporter.sendMail(lakshitaMailOptions);
-        console.log('Lakshita email sent:', lakshitaResult.messageId);
+        console.log('[Book Call] Emails sent successfully');
       } catch (emailError) {
-        console.error('Email service error:', emailError.message);
-        // Continue with booking even if email fails
+        console.error('[Book Call] Email error:', emailError.message);
       }
-    } else {
-      console.warn('Email credentials not configured. Skipping email notifications.');
     }
 
-    // Return success regardless of email status
+    console.log('[Book Call] Success');
     res.status(200).json({
       message: 'Call booked successfully',
-      eventDate: date,
-      eventTime: time,
-      duration: duration,
-      recruiterName: recruiterName,
-      recruiterEmail: recruiterEmail
+      success: true
     });
   } catch (error) {
-    console.error('Error booking call:', error);
+    console.error('[Book Call] Error:', error);
     res.status(500).json({ message: 'Failed to book call. Please try again.' });
   }
 });

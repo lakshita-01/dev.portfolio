@@ -59,8 +59,8 @@ const HireModal = ({ isOpen, onClose }) => {
       });
 
       if (response.ok) {
+        const data = await response.json();
         setStep('success');
-        // Reset form after 3 seconds
         setTimeout(() => {
           onClose();
           setStep('options');
@@ -74,7 +74,8 @@ const HireModal = ({ isOpen, onClose }) => {
           });
         }, 3000);
       } else {
-        alert('Failed to book call. Please try again.');
+        const errorData = await response.json();
+        alert(errorData.message || 'Failed to book call. Please try again.');
       }
     } catch (error) {
       console.error('Error booking call:', error);
