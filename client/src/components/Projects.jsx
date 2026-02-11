@@ -25,10 +25,10 @@ const projects = [
     title: "DevPulse",
     desc: "full-stack SaaS application for task management with secure authentication and scalable APIs..",
     tech: ["Node.js", "Google Maps API", "Redis"],
-    img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800",
+    img: "/images/devpulse.jpeg",
     category: "web",
     repo: "https://github.com/lakshita-01/devPulse.git",
-    demo: "https://devpulse.vercel.app"
+    demo: "https://dev-pulse-orcin.vercel.app/"
   }
 ];
 
