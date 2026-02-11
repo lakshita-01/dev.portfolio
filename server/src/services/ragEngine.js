@@ -5,6 +5,7 @@ const { loadResumeText } = require("./resumeLoader");
 let resumeContext = "";
 let isLoading = false;
 let isAuthenticated = false;
+let initializationPromise = null;
 
 // Completely suppress all output
 const suppressOutput = () => {
@@ -28,10 +29,8 @@ const restoreOutput = (original) => {
   process.stderr.write = original.stderr;
 };
 
-// Silent authentication with Puter
-const authenticatePuter = async () => {
-  if (isAuthenticated) return true;
-  
+// Initialize everything on server start
+const initializeOnStartup = async () => {
   const original = {
     log: console.log,
     error: console.error,
@@ -45,6 +44,7 @@ const authenticatePuter = async () => {
   try {
     suppressOutput();
     
+    // Authenticate with Puter
     const username = process.env.PUTER_USERNAME;
     const password = process.env.PUTER_PASSWORD;
     
@@ -53,28 +53,20 @@ const authenticatePuter = async () => {
     }
     
     isAuthenticated = true;
+    
+    // Load resume
+    resumeContext = await loadResumeText();
+    
     restoreOutput(original);
-    return true;
+    console.log('[Puter] AI Assistant ready');
   } catch (error) {
     restoreOutput(original);
-    isAuthenticated = true;
-    return true;
+    console.error('[Puter] Initialization failed, will retry on first use');
   }
 };
 
-// Lazy load resume when first needed
-const ensureResumeLoaded = async () => {
-  if (!resumeContext && !isLoading) {
-    isLoading = true;
-    try {
-      resumeContext = await loadResumeText();
-    } catch (error) {
-      // Silent
-    } finally {
-      isLoading = false;
-    }
-  }
-};
+// Start initialization immediately when module loads
+initializationPromise = initializeOnStartup();
 
 const getChatResponse = async (userMessage) => {
   const original = {
@@ -88,10 +80,10 @@ const getChatResponse = async (userMessage) => {
   };
   
   try {
-    suppressOutput();
+    // Wait for initialization to complete if still in progress
+    await initializationPromise;
     
-    await authenticatePuter();
-    await ensureResumeLoaded();
+    suppressOutput();
     
     const prompt = `
 You are an AI Portfolio Assistant representing Lakshita Gupta.
