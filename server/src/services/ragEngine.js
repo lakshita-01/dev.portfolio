@@ -5,12 +5,17 @@ const { loadResumeText } = require("./resumeLoader");
 let resumeContext = "";
 let authToken = null;
 let initializationPromise = null;
+let lastResumeLoadTime = null;
 
 // Initialize everything on server start
 const initializeOnStartup = async () => {
   try {
-    // Load resume
+    // Always reload resume on startup (no caching)
+    console.log('[Puter] Loading resume...');
     resumeContext = await loadResumeText();
+    lastResumeLoadTime = new Date();
+    console.log('[Puter] Resume loaded successfully at', lastResumeLoadTime.toISOString());
+    console.log('[Puter] Resume length:', resumeContext.length, 'characters');
     
     // Get Puter auth token if credentials provided
     const username = process.env.PUTER_USERNAME;
@@ -23,6 +28,7 @@ const initializeOnStartup = async () => {
           password
         });
         authToken = response.data.token;
+        console.log('[Puter] Authenticated successfully');
       } catch (error) {
         console.log('[Puter] Using anonymous mode');
       }
