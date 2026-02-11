@@ -4,33 +4,45 @@ const { loadResumeText } = require("./resumeLoader");
 
 let resumeContext = "";
 let isLoading = false;
-let isInitialized = false;
+let isAuthenticated = false;
 
-// Initialize Puter silently in background
-const initializePuter = async () => {
-  if (isInitialized) return;
+// Silent authentication with Puter
+const authenticatePuter = async () => {
+  if (isAuthenticated) return true;
+  
   try {
-    // Suppress console logs during initialization
+    // Suppress all console output during auth
     const originalLog = console.log;
     const originalError = console.error;
+    const originalWarn = console.warn;
     console.log = () => {};
     console.error = () => {};
+    console.warn = () => {};
     
-    // Initialize Puter (it's anonymous by default, no login needed)
-    await puter.ai.chat("test").catch(() => {});
+    // Authenticate with Puter using credentials from env
+    const username = process.env.PUTER_USERNAME;
+    const password = process.env.PUTER_PASSWORD;
+    
+    if (username && password) {
+      await puter.auth.signIn(username, password);
+      isAuthenticated = true;
+    } else {
+      // Use anonymous mode if no credentials
+      isAuthenticated = true;
+    }
     
     // Restore console
     console.log = originalLog;
     console.error = originalError;
+    console.warn = originalWarn;
     
-    isInitialized = true;
+    return true;
   } catch (error) {
-    // Silently fail, will retry on first actual use
+    // Silently fail and use anonymous mode
+    isAuthenticated = true;
+    return true;
   }
 };
-
-// Initialize on module load
-initializePuter();
 
 // Lazy load resume when first needed
 const ensureResumeLoaded = async () => {
@@ -48,6 +60,8 @@ const ensureResumeLoaded = async () => {
 
 const getChatResponse = async (userMessage) => {
   try {
+    // Ensure authenticated before making requests
+    await authenticatePuter();
     await ensureResumeLoaded();
     
     const prompt = `
