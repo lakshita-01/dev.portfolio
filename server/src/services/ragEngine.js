@@ -6,39 +6,57 @@ let resumeContext = "";
 let isLoading = false;
 let isAuthenticated = false;
 
+// Completely suppress all output
+const suppressOutput = () => {
+  const noop = () => {};
+  console.log = noop;
+  console.error = noop;
+  console.warn = noop;
+  console.info = noop;
+  console.debug = noop;
+  process.stdout.write = noop;
+  process.stderr.write = noop;
+};
+
+const restoreOutput = (original) => {
+  console.log = original.log;
+  console.error = original.error;
+  console.warn = original.warn;
+  console.info = original.info;
+  console.debug = original.debug;
+  process.stdout.write = original.stdout;
+  process.stderr.write = original.stderr;
+};
+
 // Silent authentication with Puter
 const authenticatePuter = async () => {
   if (isAuthenticated) return true;
   
+  const original = {
+    log: console.log,
+    error: console.error,
+    warn: console.warn,
+    info: console.info,
+    debug: console.debug,
+    stdout: process.stdout.write,
+    stderr: process.stderr.write
+  };
+  
   try {
-    // Suppress all console output during auth
-    const originalLog = console.log;
-    const originalError = console.error;
-    const originalWarn = console.warn;
-    console.log = () => {};
-    console.error = () => {};
-    console.warn = () => {};
+    suppressOutput();
     
-    // Authenticate with Puter using credentials from env
     const username = process.env.PUTER_USERNAME;
     const password = process.env.PUTER_PASSWORD;
     
     if (username && password) {
       await puter.auth.signIn(username, password);
-      isAuthenticated = true;
-    } else {
-      // Use anonymous mode if no credentials
-      isAuthenticated = true;
     }
     
-    // Restore console
-    console.log = originalLog;
-    console.error = originalError;
-    console.warn = originalWarn;
-    
+    isAuthenticated = true;
+    restoreOutput(original);
     return true;
   } catch (error) {
-    // Silently fail and use anonymous mode
+    restoreOutput(original);
     isAuthenticated = true;
     return true;
   }
@@ -51,7 +69,7 @@ const ensureResumeLoaded = async () => {
     try {
       resumeContext = await loadResumeText();
     } catch (error) {
-      console.error("Resume load error:", error.message);
+      // Silent
     } finally {
       isLoading = false;
     }
@@ -59,8 +77,19 @@ const ensureResumeLoaded = async () => {
 };
 
 const getChatResponse = async (userMessage) => {
+  const original = {
+    log: console.log,
+    error: console.error,
+    warn: console.warn,
+    info: console.info,
+    debug: console.debug,
+    stdout: process.stdout.write,
+    stderr: process.stderr.write
+  };
+  
   try {
-    // Ensure authenticated before making requests
+    suppressOutput();
+    
     await authenticatePuter();
     await ensureResumeLoaded();
     
@@ -81,11 +110,12 @@ User Question: ${userMessage}
 `;
 
     const response = await puter.ai.chat(prompt);
-
+    
+    restoreOutput(original);
     return response;
 
   } catch (error) {
-    console.error("Puter AI Error:", error.message);
+    restoreOutput(original);
     return "Unable to respond right now. Please try again later.";
   }
 };
