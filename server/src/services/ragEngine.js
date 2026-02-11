@@ -21,17 +21,27 @@ const initializeOnStartup = async () => {
     const username = process.env.PUTER_USERNAME;
     const password = process.env.PUTER_PASSWORD;
     
-    if (username && password) {
+    if (username && password && username !== 'your_puter_username') {
       try {
         const response = await axios.post('https://api.puter.com/auth/sign-in', {
           username,
           password
+        }, {
+          headers: { 'Content-Type': 'application/json' }
         });
-        authToken = response.data.token;
-        console.log('[Puter] Authenticated successfully');
+        
+        if (response.data && response.data.token) {
+          authToken = response.data.token;
+          console.log('[Puter] Authenticated successfully');
+        } else {
+          console.log('[Puter] Auth failed - invalid credentials. Using anonymous mode');
+        }
       } catch (error) {
+        console.log('[Puter] Auth error:', error.response?.data?.message || error.message);
         console.log('[Puter] Using anonymous mode');
       }
+    } else {
+      console.log('[Puter] No credentials configured. Using anonymous mode');
     }
     
     console.log('[Puter] AI Assistant ready');
