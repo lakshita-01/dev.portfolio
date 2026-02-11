@@ -4,6 +4,33 @@ const { loadResumeText } = require("./resumeLoader");
 
 let resumeContext = "";
 let isLoading = false;
+let isInitialized = false;
+
+// Initialize Puter silently in background
+const initializePuter = async () => {
+  if (isInitialized) return;
+  try {
+    // Suppress console logs during initialization
+    const originalLog = console.log;
+    const originalError = console.error;
+    console.log = () => {};
+    console.error = () => {};
+    
+    // Initialize Puter (it's anonymous by default, no login needed)
+    await puter.ai.chat("test").catch(() => {});
+    
+    // Restore console
+    console.log = originalLog;
+    console.error = originalError;
+    
+    isInitialized = true;
+  } catch (error) {
+    // Silently fail, will retry on first actual use
+  }
+};
+
+// Initialize on module load
+initializePuter();
 
 // Lazy load resume when first needed
 const ensureResumeLoaded = async () => {
