@@ -13,10 +13,27 @@ const AIChat = () => {
     { role: 'ai', content: "Hi! I'm Lakshita's AI Assistant. Ask me about her experience, skills, or projects!" }
   ]);
   const [loading, setLoading] = useState(false);
+  const [resumeContent, setResumeContent] = useState('');
   const scrollRef = useRef(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const CHAT_ENDPOINT = `${API_URL}/api/chat/query`;
+  const RESUME_ENDPOINT = `${API_URL}/api/chat/resume`;
+
+  useEffect(() => {
+    // Fetch resume content for fallback
+    const fetchResume = async () => {
+      try {
+        const res = await axios.get(RESUME_ENDPOINT);
+        if (res.data && res.data.text) {
+          setResumeContent(res.data.text);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch resume for fallback:", err);
+      }
+    };
+    fetchResume();
+  }, [RESUME_ENDPOINT]);
 
   useEffect(() => {
     if (scrollRef.current && scrollRef.current.lastElementChild) {
@@ -58,10 +75,10 @@ const AIChat = () => {
       }
 
       // Fallback to Puter AI with full context if backend fails or is in demo mode
-      const response = await window.puter.ai.chat(
-        `You are an expert AI Portfolio Assistant representing Lakshita Gupta.
+      const prompt = `You are an expert AI Portfolio Assistant representing Lakshita Gupta.
         
-        RESUME SUMMARY:
+        RESUME CONTENT:
+        ${resumeContent || `
         - Education: B.Tech CSE at GGSIPU (2023-2027), CGPA: 8.5
         - Experience: Full-Stack Developer with expertise in React/Vite, Node.js, Express, and REST API design.
         - Skills: C++, Python, JavaScript, React, Node.js, Express, MongoDB, PostgreSQL, TensorFlow, NLP, ML/DL
@@ -70,6 +87,7 @@ const AIChat = () => {
         - Certifications: A1 German Language, Google Cloud, AWS, TensorFlow Developer
         - Looking for: Full-time/Internship roles as ML Engineer, Software Engineer, or Full-stack Developer.
         - Contact: lakshitagupta9@gmail.com, Delhi, India.
+        `}
         
         RULES:
         - Answer ONLY from this resume content
@@ -77,8 +95,9 @@ const AIChat = () => {
         - Be concise and professional
         - Do NOT suggest drafting services or portfolio improvements
         
-        User Question: ${userMsg}`
-      );
+        User Question: ${userMsg}`;
+
+      const response = await window.puter.ai.chat(prompt);
       setMessages(prev => [...prev, { role: 'ai', content: response.toString() }]);
     } catch (err) {
       setMessages(prev => [...prev, { role: 'ai', content: "Sorry, I hit a snag. Please try again later!" }]);
