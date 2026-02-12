@@ -59,12 +59,12 @@ const getChatResponse = async (userMessage) => {
   try {
     // Wait for initialization to complete if still in progress
     await initializationPromise;
-        
--    // Force reload resume on every request to prevent caching
--    console.log('[Puter] Reloading resume for fresh context...');
--    resumeContext = await loadResumeText();
--    console.log('[Puter] Resume reloaded, length:', resumeContext.length);
--    console.log('[Puter] Resume snippet:', resumeContext.substring(0, 100).replace(/\n/g, ' '));
+    
+    // Force reload resume on every request to prevent caching
+    console.log('[Puter] Reloading resume for fresh context...');
+    resumeContext = await loadResumeText();
+    console.log('[Puter] Resume reloaded, length:', resumeContext.length);
+    console.log('[Puter] Resume snippet:', resumeContext.substring(0, 100).replace(/\n/g, ' '));
    
     const prompt = `
 You are an AI Portfolio Assistant representing Lakshita Gupta.
