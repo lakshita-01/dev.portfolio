@@ -111,6 +111,11 @@ router.post('/book-call', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
+    const bookingDate = new Date(date);
+    if (isNaN(bookingDate.getTime())) {
+      return res.status(400).json({ message: 'Invalid date format' });
+    }
+
     const emailUser = process.env.EMAIL_USER;
     const emailPassword = process.env.EMAIL_PASSWORD;
 
@@ -134,7 +139,7 @@ router.post('/book-call', async (req, res) => {
               <p>Hi ${recruiterName},</p>
               <p>Your call with Lakshita Gupta has been scheduled:</p>
               <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                <p><strong>Date:</strong> ${new Date(date).toLocaleDateString()}</p>
+                <p><strong>Date:</strong> ${bookingDate.toLocaleDateString()}</p>
                 <p><strong>Time:</strong> ${time}</p>
                 <p><strong>Duration:</strong> ${duration} minutes</p>
                 <p><strong>Purpose:</strong> ${purpose}</p>
@@ -173,8 +178,11 @@ router.post('/book-call', async (req, res) => {
       success: true
     });
   } catch (error) {
-    console.error('[Book Call] Error:', error);
-    res.status(500).json({ message: 'Failed to book call. Please try again.' });
+    console.error('[Book Call] Critical Error:', error);
+    res.status(500).json({ 
+      message: 'Failed to book call. Please try again.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

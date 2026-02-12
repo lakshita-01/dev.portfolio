@@ -8,6 +8,9 @@ router.post('/query', async (req, res) => {
 
   try {
     const reply = await getChatResponse(message);
+    if (reply === "Unable to respond right now. Please try again later.") {
+      return res.status(503).json({ error: 'AI Service temporarily unavailable' });
+    }
     res.json({ reply });
   } catch (error) {
     res.status(500).json({ error: 'Failed to process AI query' });

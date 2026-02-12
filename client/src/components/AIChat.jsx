@@ -54,7 +54,7 @@ const AIChat = () => {
           return;
         }
       } catch (backendErr) {
-        console.warn("Backend AI failed, falling back to Puter:", backendErr);
+        console.warn("Backend AI failed, falling back to client-side summary:", backendErr);
       }
 
       // Fallback to Puter AI with full context if backend fails or is in demo mode
@@ -63,12 +63,13 @@ const AIChat = () => {
         
         RESUME SUMMARY:
         - Education: B.Tech CSE at GGSIPU (2023-2027), CGPA: 8.5
-        - Experience: SDE Intern at Bluestock Fintech, Frontend Developer at Edunet Foundation
-        - Skills: C++, Python, JavaScript, React, Node.js, Express, MongoDB, PostgreSQL, TensorFlow, PyTorch, NLP, ML/DL
-        - Projects: SaaS Cold Email Optimizer, Project Management Dashboard, Employee Attrition Risk Analysis (82.7% accuracy)
-        - Awards: 3rd place Hack&Chill Hackathon, Open-source contributor (Gssoc'25, OSCG'26), GDG Solution Challenge participant
-        - Certifications: A1 German, Google Cloud, AWS, TensorFlow Developer
-        - lakshita is looking for roles like ml engineer or software engineer or web developer(frontend/backend/fullstack) roles for fulltime/internship.
+        - Experience: Full-Stack Developer with expertise in React/Vite, Node.js, Express, and REST API design.
+        - Skills: C++, Python, JavaScript, React, Node.js, Express, MongoDB, PostgreSQL, TensorFlow, NLP, ML/DL
+        - Projects: Project Management SaaS, SaaS Cold Email Optimizer, Employee Attrition Risk Analysis
+        - Awards: 3rd place Hack&Chill Hackathon, Open-source contributor (Gssoc'25, OSCG'26), GDG Solution Challenge Participant
+        - Certifications: A1 German Language, Google Cloud, AWS, TensorFlow Developer
+        - Looking for: Full-time/Internship roles as ML Engineer, Software Engineer, or Full-stack Developer.
+        - Contact: lakshitagupta9@gmail.com, Delhi, India.
         
         RULES:
         - Answer ONLY from this resume content
