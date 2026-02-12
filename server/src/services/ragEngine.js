@@ -59,22 +59,29 @@ const getChatResponse = async (userMessage) => {
   try {
     // Wait for initialization to complete if still in progress
     await initializationPromise;
-    
-    // Force reload resume on every request to prevent caching
-    console.log('[Puter] Reloading resume for fresh context...');
-    resumeContext = await loadResumeText();
-    console.log('[Puter] Resume reloaded, length:', resumeContext.length);
-    console.log('[Puter] Resume snippet:', resumeContext.substring(0, 100).replace(/\n/g, ' '));
-    
+        
+-    // Force reload resume on every request to prevent caching
+-    console.log('[Puter] Reloading resume for fresh context...');
+-    resumeContext = await loadResumeText();
+-    console.log('[Puter] Resume reloaded, length:', resumeContext.length);
+-    console.log('[Puter] Resume snippet:', resumeContext.substring(0, 100).replace(/\n/g, ' '));
+   
     const prompt = `
 You are an AI Portfolio Assistant representing Lakshita Gupta.
+Lakshita is actively looking for roles like Machine Learning Engineer, Software Engineer and web developer(fullstack/frontend/backend) for both internship and fulltime roles.
 
 RULES:
 - Answer ONLY using the resume content below.
 - If information is not available, say:
-  "That information is not available in the resume. Please contact Lakshita directly at lakshitagupta9@gmail.com."
+  "That information is not available in the resume. Please contact Lakshita directly."
 - Do NOT exaggerate or assume experience.
 - Be concise and professional.
+- AT THE END of your response, ALWAYS include this exact footer:
+  ---
+  For more details, contact Lakshita:
+  📧 Email: lakshitagupta9@gmail.com
+  📅 Book a Call: Click the 'Hire Me' button in the navbar
+  🔗 LinkedIn: https://www.linkedin.com/in/lakshita-gupta01
 
 RESUME CONTENT:
 ${resumeContext}
