@@ -13,14 +13,18 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
-  }
+  },
+  pool: true,
+  maxConnections: 1,
+  rateDelta: 20000,
+  rateLimit: 5
 });
 
-// Verify transporter on startup
+// Verify transporter on startup with timeout
 if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD && process.env.EMAIL_USER !== 'your-email@gmail.com') {
-  transporter.verify((error) => {
+  transporter.verify({ timeout: 5000 }, (error) => {
     if (error) {
-      logger.error('Email transporter verification failed', { error: error.message });
+      logger.warn('Email transporter verification failed - emails will be skipped', { error: error.message });
     } else {
       logger.info('Email transporter ready');
     }
@@ -184,14 +188,17 @@ router.post('/book-call', async (req, res) => {
         `
       };
 
-      // Send emails in background
-      Promise.all([
-        transporter.sendMail(recruiterMailOptions),
-        transporter.sendMail(adminMailOptions)
+      // Send emails in background with timeout
+      Promise.race([
+        Promise.all([
+          transporter.sendMail(recruiterMailOptions),
+          transporter.sendMail(adminMailOptions)
+        ]),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Email timeout')), 10000))
       ]).then(() => {
         logger.info('[Book Call] Emails sent successfully');
       }).catch(emailError => {
-        logger.error('[Book Call] Email error', { error: emailError.message });
+        logger.warn('[Book Call] Email skipped', { error: emailError.message });
       });
     } else {
       logger.warn('[Book Call] Email credentials not configured properly');
