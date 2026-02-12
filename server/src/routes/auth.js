@@ -8,6 +8,25 @@ const logger = require('../utils/logger');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
+
+// Verify transporter on startup
+if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD && process.env.EMAIL_USER !== 'your-email@gmail.com') {
+  transporter.verify((error) => {
+    if (error) {
+      logger.error('Email transporter verification failed', { error: error.message });
+    } else {
+      logger.info('Email transporter ready');
+    }
+  });
+}
+
 router.post('/login', [
   body('username').trim().isLength({ min: 3, max: 50 }).isAlphanumeric(),
   body('password').isLength({ min: 8 })
@@ -103,11 +122,10 @@ router.post('/register', [
 router.post('/book-call', async (req, res) => {
   const { date, time, duration, purpose, recruiterName, recruiterEmail } = req.body;
 
-  console.log('[Book Call] Request received:', { date, time, recruiterName, recruiterEmail });
+  logger.info('[Book Call] Request received', { date, time, recruiterName, recruiterEmail });
 
   try {
     if (!date || !time || !purpose || !recruiterName || !recruiterEmail) {
-      console.log('[Book Call] Missing fields');
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -119,70 +137,73 @@ router.post('/book-call', async (req, res) => {
     const emailUser = process.env.EMAIL_USER;
     const emailPassword = process.env.EMAIL_PASSWORD;
 
+    // We respond to the client early to improve UX, but we also want to ensure we try to send emails
+    res.status(200).json({
+      message: 'Call booking initiated successfully',
+      success: true
+    });
+
     if (emailUser && emailPassword && emailUser !== 'your-email@gmail.com') {
-      try {
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: { user: emailUser, pass: emailPassword }
-        });
-
-        await transporter.verify();
-        console.log('[Book Call] Email verified');
-
-        await transporter.sendMail({
-          from: emailUser,
-          to: recruiterEmail,
-          subject: 'Call Scheduled with Lakshita Gupta',
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2>Call Confirmed! 🎉</h2>
-              <p>Hi ${recruiterName},</p>
-              <p>Your call with Lakshita Gupta has been scheduled:</p>
-              <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                <p><strong>Date:</strong> ${bookingDate.toLocaleDateString()}</p>
-                <p><strong>Time:</strong> ${time}</p>
-                <p><strong>Duration:</strong> ${duration} minutes</p>
-                <p><strong>Purpose:</strong> ${purpose}</p>
-              </div>
-              <p>Best regards,<br>Lakshita Gupta</p>
-            </div>
-          `
-        });
-
-        await transporter.sendMail({
-          from: emailUser,
-          to: 'lakshitagupta9@gmail.com',
-          subject: `New Call - ${recruiterName}`,
-          html: `
-            <div style="font-family: Arial, sans-serif;">
-              <h2>New Call Booked 📞</h2>
-              <p><strong>Name:</strong> ${recruiterName}</p>
-              <p><strong>Email:</strong> ${recruiterEmail}</p>
-              <p><strong>Date:</strong> ${new Date(date).toLocaleDateString()}</p>
+      const recruiterMailOptions = {
+        from: emailUser,
+        to: recruiterEmail,
+        subject: 'Call Scheduled with Lakshita Gupta',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <h2 style="color: #6366f1;">Call Confirmed! 🎉</h2>
+            <p>Hi ${recruiterName},</p>
+            <p>Your call with Lakshita Gupta has been scheduled:</p>
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #6366f1;">
+              <p><strong>Date:</strong> ${bookingDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
               <p><strong>Time:</strong> ${time}</p>
               <p><strong>Duration:</strong> ${duration} minutes</p>
               <p><strong>Purpose:</strong> ${purpose}</p>
             </div>
-          `
-        });
+            <p>A calendar invitation will be sent to you shortly.</p>
+            <p>Best regards,<br>Lakshita Gupta</p>
+          </div>
+        `
+      };
 
-        console.log('[Book Call] Emails sent successfully');
-      } catch (emailError) {
-        console.error('[Book Call] Email error:', emailError.message);
-      }
+      const adminMailOptions = {
+        from: emailUser,
+        to: 'lakshitagupta9@gmail.com',
+        subject: `New Call Scheduled - ${recruiterName}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <h2 style="color: #06b6d4;">New Call Booked 📞</h2>
+            <div style="background: #f0fdfa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #06b6d4;">
+              <p><strong>Name:</strong> ${recruiterName}</p>
+              <p><strong>Email:</strong> ${recruiterEmail}</p>
+              <p><strong>Date:</strong> ${bookingDate.toLocaleDateString()}</p>
+              <p><strong>Time:</strong> ${time}</p>
+              <p><strong>Duration:</strong> ${duration} minutes</p>
+              <p><strong>Purpose:</strong> ${purpose}</p>
+            </div>
+          </div>
+        `
+      };
+
+      // Send emails in background
+      Promise.all([
+        transporter.sendMail(recruiterMailOptions),
+        transporter.sendMail(adminMailOptions)
+      ]).then(() => {
+        logger.info('[Book Call] Emails sent successfully');
+      }).catch(emailError => {
+        logger.error('[Book Call] Email error', { error: emailError.message });
+      });
+    } else {
+      logger.warn('[Book Call] Email credentials not configured properly');
     }
-
-    console.log('[Book Call] Success');
-    res.status(200).json({
-      message: 'Call booked successfully',
-      success: true
-    });
   } catch (error) {
-    console.error('[Book Call] Critical Error:', error);
-    res.status(500).json({ 
-      message: 'Failed to book call. Please try again.',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    logger.error('[Book Call] Critical Error', { error: error.message });
+    if (!res.headersSent) {
+      res.status(500).json({ 
+        message: 'Failed to book call. Please try again.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
   }
 });
 

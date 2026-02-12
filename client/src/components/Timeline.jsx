@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Briefcase, Calendar, MapPin, ArrowRight } from 'lucide-react';
+import { Briefcase, Calendar, MapPin, Sword } from 'lucide-react';
 
 const experiences = [
   {
@@ -63,7 +63,15 @@ const Timeline = () => {
   };
 
   const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start end', 'end start'] });
+  const { scrollYProgress } = useScroll({ 
+    target: containerRef, 
+    offset: ['start 0.2', 'end 0.8'] 
+  });
+  
+  const daggerY = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+  const daggerRotate = useTransform(scrollYProgress, [0, 1], [180, 180]); // Keep it pointing down
+  const daggerOpacity = useTransform(scrollYProgress, [0, 0.05, 0.95, 1], [0, 1, 1, 0]);
+  
   const dotY = useTransform(scrollYProgress, [0, 1], [20, -20]);
 
   return (
@@ -109,7 +117,28 @@ const Timeline = () => {
         whileInView="visible"
         viewport={{ once: false, margin: '0px 0px -200px 0px' }}
       >
+        {/* Vertical Line */}
         <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-accent-primary/50 via-accent-secondary/50 to-accent-primary/50" />
+
+        {/* Floating Dagger */}
+        <motion.div
+          style={{ 
+            top: daggerY,
+            rotate: daggerRotate,
+            opacity: daggerOpacity
+          }}
+          className="hidden md:flex absolute left-1/2 -translate-x-1/2 z-30 pointer-events-none items-center justify-center"
+        >
+          <div className="relative">
+            {/* Glow effect */}
+            <div className="absolute inset-0 blur-lg bg-accent-primary/40 rounded-full" />
+            <Sword 
+              className="text-accent-primary fill-accent-primary/10 relative z-10" 
+              size={32} 
+              strokeWidth={1.5}
+            />
+          </div>
+        </motion.div>
 
         <div className="space-y-12 md:space-y-20">
           {experiences.map((exp, index) => (
