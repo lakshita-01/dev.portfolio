@@ -13,11 +13,7 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
-  },
-  pool: true,
-  maxConnections: 1,
-  rateDelta: 20000,
-  rateLimit: 5
+  }
 });
 
 // Verify transporter on startup with timeout
@@ -133,9 +129,15 @@ router.post('/book-call', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const bookingDate = new Date(date);
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recruiterEmail)) {
+      return res.status(400).json({ message: 'Invalid email address' });
+    }
+
+    const bookingDate = new Date(`${date}T${time}`);
     if (isNaN(bookingDate.getTime())) {
-      return res.status(400).json({ message: 'Invalid date format' });
+      return res.status(400).json({ message: 'Invalid date or time format' });
     }
 
     const emailUser = process.env.EMAIL_USER;
@@ -149,9 +151,11 @@ router.post('/book-call', async (req, res) => {
 
     if (emailUser && emailPassword && emailUser !== 'your-email@gmail.com') {
       const recruiterMailOptions = {
-        from: emailUser,
+        from: `"Lakshita Gupta" <${emailUser}>`,
         to: recruiterEmail,
+        replyTo: emailUser,
         subject: 'Call Scheduled with Lakshita Gupta',
+        text: `Hi ${recruiterName},\n\nYour call with Lakshita Gupta has been scheduled for ${bookingDate.toLocaleDateString()} at ${time} (${duration} minutes).\n\nPurpose: ${purpose}\n\nA calendar invitation is attached.\n\nBest regards,\nLakshita Gupta`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
             <h2 style="color: #6366f1;">Call Confirmed! 🎉</h2>
@@ -163,15 +167,33 @@ router.post('/book-call', async (req, res) => {
               <p><strong>Duration:</strong> ${duration} minutes</p>
               <p><strong>Purpose:</strong> ${purpose}</p>
             </div>
-            <p>A calendar invitation will be sent to you shortly.</p>
+            <p>A calendar invitation has been attached to this email.</p>
             <p>Best regards,<br>Lakshita Gupta</p>
           </div>
-        `
+        `,
+        alternatives: [{
+          contentType: 'text/calendar; charset="utf-8"; method=REQUEST',
+          content: Buffer.from(`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Lakshita Gupta//NONSGML Event//EN
+METHOD:REQUEST
+BEGIN:VEVENT
+UID:${Date.now()}@lakshitagupta.com
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTART:${bookingDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DURATION:PT${duration}M
+SUMMARY:Call with Lakshita Gupta: ${purpose}
+DESCRIPTION:Call to discuss: ${purpose}
+ORGANIZER;CN="Lakshita Gupta":mailto:${emailUser}
+ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN="${recruiterName}":mailto:${recruiterEmail}
+END:VEVENT
+END:VCALENDAR`)
+        }]
       };
 
       const adminMailOptions = {
         from: emailUser,
-        to: 'lakshitagupta9@gmail.com',
+        to: emailUser, // Send to the account owner
         subject: `New Call Scheduled - ${recruiterName}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
@@ -194,11 +216,11 @@ router.post('/book-call', async (req, res) => {
           transporter.sendMail(recruiterMailOptions),
           transporter.sendMail(adminMailOptions)
         ]),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Email timeout')), 10000))
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Email timeout')), 30000))
       ]).then(() => {
         logger.info('[Book Call] Emails sent successfully');
       }).catch(emailError => {
-        logger.warn('[Book Call] Email skipped', { error: emailError.message });
+        logger.warn('[Book Call] Email failed or timed out', { error: emailError.message });
       });
     } else {
       logger.warn('[Book Call] Email credentials not configured properly');

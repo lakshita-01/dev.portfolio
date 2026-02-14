@@ -38,6 +38,13 @@ const HireModal = ({ isOpen, onClose }) => {
       return;
     }
 
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(bookingData.recruiterEmail)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {

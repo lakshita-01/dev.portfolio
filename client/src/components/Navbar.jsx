@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, Terminal, Moon, Sun } from 'lucide-react';
@@ -10,6 +10,12 @@ const Navbar = () => {
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
   const [isHireModalOpen, setIsHireModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenHireModal = () => setIsHireModalOpen(true);
+    window.addEventListener('openHireModal', handleOpenHireModal);
+    return () => window.removeEventListener('openHireModal', handleOpenHireModal);
+  }, []);
 
   const handleNavClick = (e, id) => {
     if (location.pathname === '/') {

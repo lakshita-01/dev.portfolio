@@ -15,6 +15,7 @@ const analyticsRoutes = require('./src/routes/analytics');
 const { trackVisitor } = require('./src/middleware/analytics');
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Render/Vercel)
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -33,7 +34,7 @@ app.use(helmet({
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
       mediaSrc: ["'self'", "data:", "blob:"],
-      connectSrc: ["'self'"]
+      connectSrc: ["'self'", "http://localhost:5000", "http://localhost:5173", "https://dev-portfolio-mocha-beta.vercel.app", "https://your-backend-url.onrender.com"]
     }
   },
   hsts: {
@@ -58,8 +59,8 @@ const limiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 auth requests per windowMs
-  message: 'Too many authentication attempts, please try again later.',
+  max: 20, // increased from 5 to 20 to allow more attempts for booking calls
+  message: 'Too many requests, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
@@ -86,7 +87,7 @@ const corsOptions = {
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      logger.security('CORS blocked request', { origin, ip: req.ip });
+      logger.security('CORS blocked request', { origin });
       callback(new Error('Not allowed by CORS'));
     }
   },
