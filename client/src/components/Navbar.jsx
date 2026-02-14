@@ -37,8 +37,8 @@ const Navbar = () => {
   ];
 
   const socialIcons = [
-    { icon: Github, href: 'https://github.com' },
-    { icon: Linkedin, href: 'https://linkedin.com' }
+    { icon: Github, href: 'https://github.com/lakshita-01' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/lakshita-gupta01/' }
   ];
 
   return (
