@@ -108,12 +108,12 @@ const MarqueeRow = ({ items, direction = "left", speed = 40 }) => {
         {[...items, ...items, ...items, ...items].map((item, idx) => (
           <div
             key={idx}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-black/20 to-black/40 border border-white/5 rounded-xl hover:border-white/20 transition-all duration-300 group cursor-pointer shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-200/50 dark:bg-gradient-to-r dark:from-black/20 dark:to-black/40 border border-gray-200 dark:border-white/5 rounded-xl hover:border-accent-primary/50 transition-all duration-300 group cursor-pointer shadow-sm"
           >
             <div className="flex items-center justify-center w-6 h-6 opacity-80 group-hover:opacity-100 transition-opacity">
               {getSkillIcon(item)}
             </div>
-            <span className="text-white/60 text-xs font-medium group-hover:text-white transition-colors uppercase tracking-tight">
+            <span className="text-gray-600 dark:text-white/60 text-xs font-medium group-hover:text-black dark:group-hover:text-white transition-colors uppercase tracking-tight">
               {item}
             </span>
           </div>
@@ -133,11 +133,11 @@ const SkillsRadar = () => {
   const ref = useRef(null);
 
   return (
-    <section id="skills" className="relative py-24 overflow-hidden bg-black rounded-[3rem] border border-white/10">
+    <section id="skills" className="relative py-24 overflow-hidden bg-slate-50 dark:bg-black rounded-[3rem] border border-gray-200 dark:border-white/10">
       {/* Grid Background */}
-      <div className="absolute inset-0 opacity-[0.1]"
+      <div className="absolute inset-0 opacity-[0.1] dark:opacity-[0.1]"
         style={{
-          backgroundImage: `linear-gradient(to right, #444 1px, transparent 1px), linear-gradient(to bottom, #444 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(to right, #888 1px, transparent 1px), linear-gradient(to bottom, #888 1px, transparent 1px)`,
           backgroundSize: '40px 40px'
         }}
       />
@@ -156,7 +156,7 @@ const SkillsRadar = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <span className="text-white/95">Passionate about </span>
+            <span className="text-gray-900 dark:text-white/95">Passionate about </span>
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent italic font-serif">
               cutting-edge
             </span>
@@ -230,11 +230,11 @@ const SkillsRadar = () => {
                 animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
                 transition={{ duration: 1.2, type: "spring", stiffness: 80, damping: 12 }}
               >
-                <span className="text-sm font-bold tracking-[0.4em] text-white/40 uppercase mb-6 block">
+                <span className="text-sm font-bold tracking-[0.4em] text-gray-500 dark:text-white/40 uppercase mb-6 block">
                   TECH STACK EXPOSURE
                 </span>
                 <h2 className="text-4xl md:text-6xl font-serif mb-16">
-                  <span className="text-white/90">The Secret </span>
+                  <span className="text-gray-900 dark:text-white/90">The Secret </span>
                   <span className="italic bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 bg-clip-text text-transparent drop-shadow-sm">
                     Sauce
                   </span>
@@ -277,7 +277,7 @@ const SkillsRadar = () => {
                             backgroundColor: 'rgba(255,255,255,0.08)',
                             borderColor: 'rgba(255,255,255,0.3)'
                           }}
-                          className="w-8 h-8 md:w-12 md:h-12 bg-[#0F0F0F] border border-white/10 rounded-[2rem] flex items-center justify-center cursor-pointer transition-all duration-500 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.7)] relative overflow-hidden group"
+                          className="w-8 h-8 md:w-12 md:h-12 bg-white dark:bg-[#0F0F0F] border border-gray-200 dark:border-white/10 rounded-[2rem] flex items-center justify-center cursor-pointer transition-all duration-500 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_40px_-15px_rgba(0,0,0,0.7)] relative overflow-hidden group"
                         >
                           <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                           <div className="relative z-10 transform group-hover:scale-110 transition-transform duration-500">

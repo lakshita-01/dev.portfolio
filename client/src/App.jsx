@@ -47,7 +47,7 @@ function Home() {
         <Projects />
       </div>
       <AIChat />
-      <div className="fixed bottom-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-xs text-white/60">
+      <div className="fixed bottom-4 left-4 bg-white/40 dark:bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-gray-200 dark:border-white/10 text-xs text-gray-600 dark:text-white/60">
         <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2 animate-pulse"></span>
         {onlineCount} people viewing portfolio right now
       </div>

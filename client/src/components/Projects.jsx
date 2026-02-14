@@ -84,7 +84,7 @@ const Projects = () => {
             </motion.span>
           </motion.h2>
           <motion.p 
-            className="text-white/60"
+            className="text-gray-600 dark:text-white/60"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: false }}
@@ -108,7 +108,7 @@ const Projects = () => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className={`px-6 py-2 rounded-full font-semibold capitalize transition-all relative overflow-hidden text-sm ${
-              activeCategory === filter.id ? 'bg-accent-secondary text-white shadow-lg shadow-accent-secondary/50' : 'glass-card text-white/70 hover:text-white'
+              activeCategory === filter.id ? 'bg-accent-secondary text-white shadow-lg shadow-accent-secondary/50' : 'glass-card text-gray-600 dark:text-white/70 hover:text-black dark:hover:text-white'
             }`}
           >
             <motion.div
@@ -190,7 +190,7 @@ const Projects = () => {
             </motion.h3>
             
             <motion.p 
-              className="text-white/60 text-sm mb-6 line-clamp-2"
+              className="text-gray-600 dark:text-white/60 text-sm mb-6 line-clamp-2"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: false }}

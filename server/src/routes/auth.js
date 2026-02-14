@@ -135,7 +135,6 @@ router.post('/book-call', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(recruiterEmail)) {
       return res.status(400).json({ message: 'Invalid email address' });
@@ -149,39 +148,36 @@ router.post('/book-call', async (req, res) => {
     const emailUser = process.env.EMAIL_USER;
     const emailPassword = process.env.EMAIL_PASSWORD;
 
-    // We respond to the client early to improve UX, but we also want to ensure we try to send emails
-    res.status(200).json({
-      message: 'Call booking initiated successfully',
-      success: true
-    });
+    if (!emailUser || !emailPassword || emailUser === 'your-email@gmail.com') {
+      logger.error('[Book Call] Email not configured');
+      return res.status(500).json({ message: 'Email service not configured. Please contact admin.' });
+    }
 
-    if (emailUser && emailPassword && emailUser !== 'your-email@gmail.com') {
-      const recruiterMailOptions = {
-        from: `"Lakshita Gupta" <${emailUser}>`,
-        to: recruiterEmail,
-        replyTo: emailUser,
-        subject: 'Call Scheduled with Lakshita Gupta',
-        text: `Hi ${recruiterName},\n\nYour call with Lakshita Gupta has been scheduled for ${bookingDate.toLocaleDateString()} at ${time} (${duration} minutes).\n\nPurpose: ${purpose}\n\nA calendar invitation is attached.\n\nBest regards,\nLakshita Gupta`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-            <h2 style="color: #6366f1;">Call Confirmed! 🎉</h2>
-            <p>Hi ${recruiterName},</p>
-            <p>Your call with Lakshita Gupta has been scheduled:</p>
-            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #6366f1;">
-              <p><strong>Date:</strong> ${bookingDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-              <p><strong>Time:</strong> ${time}</p>
-              <p><strong>Duration:</strong> ${duration} minutes</p>
-              <p><strong>Purpose:</strong> ${purpose}</p>
-            </div>
-            <p>A calendar invitation has been attached to this email.</p>
-            <p>Best regards,<br>Lakshita Gupta</p>
+    const recruiterMailOptions = {
+      from: `"Lakshita Gupta" <${emailUser}>`,
+      to: recruiterEmail,
+      replyTo: emailUser,
+      subject: 'Call Scheduled with Lakshita Gupta',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+          <h2 style="color: #6366f1;">Call Confirmed! 🎉</h2>
+          <p>Hi ${recruiterName},</p>
+          <p>Your call with Lakshita Gupta has been scheduled:</p>
+          <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #6366f1;">
+            <p><strong>Date:</strong> ${bookingDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p><strong>Time:</strong> ${time}</p>
+            <p><strong>Duration:</strong> ${duration} minutes</p>
+            <p><strong>Purpose:</strong> ${purpose}</p>
           </div>
-        `,
-        alternatives: [{
-          contentType: 'text/calendar; charset="utf-8"; method=REQUEST',
-          content: Buffer.from(`BEGIN:VCALENDAR
+          <p>A calendar invitation has been attached to this email.</p>
+          <p>Best regards,<br>Lakshita Gupta</p>
+        </div>
+      `,
+      icalEvent: {
+        method: 'REQUEST',
+        content: `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Lakshita Gupta//NONSGML Event//EN
+PRODID:-//Lakshita Gupta//Portfolio//EN
 METHOD:REQUEST
 BEGIN:VEVENT
 UID:${Date.now()}@lakshitagupta.com
@@ -189,61 +185,58 @@ DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
 DTSTART:${bookingDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
 DURATION:PT${duration}M
 SUMMARY:Call with Lakshita Gupta: ${purpose}
-DESCRIPTION:Call to discuss: ${purpose}
-ORGANIZER;CN="Lakshita Gupta":mailto:${emailUser}
-ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN="${recruiterName}":mailto:${recruiterEmail}
+DESCRIPTION:${purpose}
+ORGANIZER;CN=Lakshita Gupta:mailto:${emailUser}
+ATTENDEE;CN=${recruiterName};RSVP=TRUE:mailto:${recruiterEmail}
 END:VEVENT
-END:VCALENDAR`)
-        }]
-      };
+END:VCALENDAR`
+      }
+    };
 
-      const adminMailOptions = {
-        from: emailUser,
-        to: emailUser, // Send to the account owner
-        subject: `New Call Scheduled - ${recruiterName}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-            <h2 style="color: #06b6d4;">New Call Booked 📞</h2>
-            <div style="background: #f0fdfa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #06b6d4;">
-              <p><strong>Name:</strong> ${recruiterName}</p>
-              <p><strong>Email:</strong> ${recruiterEmail}</p>
-              <p><strong>Date:</strong> ${bookingDate.toLocaleDateString()}</p>
-              <p><strong>Time:</strong> ${time}</p>
-              <p><strong>Duration:</strong> ${duration} minutes</p>
-              <p><strong>Purpose:</strong> ${purpose}</p>
-            </div>
+    const adminMailOptions = {
+      from: emailUser,
+      to: emailUser,
+      subject: `New Call Scheduled - ${recruiterName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+          <h2 style="color: #06b6d4;">New Call Booked 📞</h2>
+          <div style="background: #f0fdfa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #06b6d4;">
+            <p><strong>Name:</strong> ${recruiterName}</p>
+            <p><strong>Email:</strong> ${recruiterEmail}</p>
+            <p><strong>Date:</strong> ${bookingDate.toLocaleDateString()}</p>
+            <p><strong>Time:</strong> ${time}</p>
+            <p><strong>Duration:</strong> ${duration} minutes</p>
+            <p><strong>Purpose:</strong> ${purpose}</p>
           </div>
-        `
-      };
+        </div>
+      `
+    };
 
-      // Send recruiter email
-      transporter.sendMail(recruiterMailOptions, (error, info) => {
-        if (error) {
-          logger.error('[Book Call] Recruiter email failed', { error: error.message });
-        } else {
-          logger.info('[Book Call] Recruiter email sent', { messageId: info.messageId });
-        }
+    // Send both emails and wait for completion
+    try {
+      await Promise.all([
+        transporter.sendMail(recruiterMailOptions),
+        transporter.sendMail(adminMailOptions)
+      ]);
+      
+      logger.info('[Book Call] Both emails sent successfully');
+      res.status(200).json({
+        message: 'Call booked successfully! Check your email for confirmation.',
+        success: true
       });
-
-      // Send admin email
-      transporter.sendMail(adminMailOptions, (error, info) => {
-        if (error) {
-          logger.error('[Book Call] Admin email failed', { error: error.message });
-        } else {
-          logger.info('[Book Call] Admin email sent', { messageId: info.messageId });
-        }
+    } catch (emailError) {
+      logger.error('[Book Call] Email sending failed', { error: emailError.message });
+      return res.status(500).json({ 
+        message: 'Failed to send confirmation emails. Please try again or contact directly at lakshitagupta9@gmail.com',
+        error: emailError.message
       });
-    } else {
-      logger.warn('[Book Call] Email credentials not configured properly');
     }
   } catch (error) {
     logger.error('[Book Call] Critical Error', { error: error.message });
-    if (!res.headersSent) {
-      res.status(500).json({ 
-        message: 'Failed to book call. Please try again.',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
-      });
-    }
+    return res.status(500).json({ 
+      message: 'Failed to book call. Please try again.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

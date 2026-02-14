@@ -99,7 +99,7 @@ const Hero = () => {
         </motion.h1>
 
         <motion.p 
-          className="max-w-2xl mx-auto text-lg text-white/60 mb-12 leading-relaxed"
+          className="max-w-2xl mx-auto text-lg text-gray-600 dark:text-white/60 mb-12 leading-relaxed"
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }}

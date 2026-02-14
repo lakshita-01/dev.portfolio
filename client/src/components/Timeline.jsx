@@ -99,7 +99,7 @@ const Timeline = () => {
           </motion.span>
         </motion.h2>
         <motion.p
-          className="text-white/60 max-w-2xl mx-auto"
+          className="text-gray-600 dark:text-white/60 max-w-2xl mx-auto"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: false }}
@@ -189,11 +189,11 @@ const Timeline = () => {
                     <Briefcase size={16} />
                     {exp.company}
                   </p>
-                  <p className="text-white/60 text-sm mb-4 flex items-center gap-2">
+                  <p className="text-gray-500 dark:text-white/60 text-sm mb-4 flex items-center gap-2">
                     <MapPin size={14} />
                     {exp.location}
                   </p>
-                  <p className="text-white/70 mb-4 leading-relaxed">{exp.description}</p>
+                  <p className="text-gray-600 dark:text-white/70 mb-4 leading-relaxed">{exp.description}</p>
                   <div className="flex flex-wrap gap-2">
                     {exp.skills.map((skill) => (
                       <span key={skill} className="text-xs bg-accent-primary/20 text-accent-primary px-2 py-1 rounded-full border border-accent-primary/30">

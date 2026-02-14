@@ -141,7 +141,7 @@ const AchievementsAndCertifications = () => {
             & Certifications
           </motion.span>
         </motion.h2>
-        <motion.p className="text-white/60 max-w-2xl mx-auto" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: false }} transition={{ delay: 0.2, duration: 0.6 }}>
+        <motion.p className="text-gray-600 dark:text-white/60 max-w-2xl mx-auto" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: false }} transition={{ delay: 0.2, duration: 0.6 }}>
           Recognition of skills, achievements, and professional milestones throughout my career journey.
         </motion.p>
       </motion.div>
@@ -155,7 +155,7 @@ const AchievementsAndCertifications = () => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className={`px-6 py-3 rounded-full font-semibold capitalize transition-all relative overflow-hidden ${
-              activeTab === tab ? 'bg-accent-primary text-white shadow-lg shadow-accent-primary/50' : 'glass-card text-white/70 hover:text-white'
+              activeTab === tab ? 'bg-accent-primary text-white shadow-lg shadow-accent-primary/50' : 'glass-card text-gray-600 dark:text-white/70 hover:text-black dark:hover:text-white'
             }`}
           >
             <motion.div
@@ -217,13 +217,13 @@ const AchievementsAndCertifications = () => {
                         transition={{ delay: 0.15 }}
                       >
                         <div className={`text-3xl font-black bg-gradient-to-r ${achievement.color} bg-clip-text text-transparent`}>{achievement.stats}</div>
-                        <p className="text-xs text-white/60 mt-1">{achievement.date}</p>
+                        <p className="text-xs text-gray-500 dark:text-white/60 mt-1">{achievement.date}</p>
                       </motion.div>
                     </div>
 
                     {/* Title and Description */}
                     <h3 className="text-xl font-bold mb-3 group-hover:text-accent-primary transition-colors">{achievement.title}</h3>
-                    <p className="text-white/70 leading-relaxed mb-6">{achievement.description}</p>
+                    <p className="text-gray-600 dark:text-white/70 leading-relaxed mb-6">{achievement.description}</p>
 
                     {/* Progress bar */}
                     <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
@@ -275,7 +275,7 @@ const AchievementsAndCertifications = () => {
                 </motion.div>
                 <div className="space-y-3">
                   <h3 className="text-lg font-bold group-hover:text-accent-primary transition-colors line-clamp-2">{cert.name}</h3>
-                  <p className="text-sm text-white/70 flex items-center gap-2"><span>📋</span>{cert.issuer}</p>
+                  <p className="text-sm text-gray-600 dark:text-white/70 flex items-center gap-2"><span>📋</span>{cert.issuer}</p>
                 </div>
               </motion.div>
             ))}

@@ -131,7 +131,7 @@ const AIChat = () => {
             </div>
 
             {/* Messages */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900/50">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-100 dark:bg-slate-900/50">
               <AnimatePresence>
                 {messages.map((m, i) => (
                   <motion.div
@@ -142,10 +142,10 @@ const AIChat = () => {
                     className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div className={`flex gap-2 max-w-[80%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                      <div className={`p-2 rounded-full h-8 w-8 flex-shrink-0 flex items-center justify-center ${m.role === 'user' ? 'bg-accent-primary' : 'bg-white/10'}`}>
-                        {m.role === 'user' ? <User size={14} /> : <Bot size={14} />}
+                      <div className={`p-2 rounded-full h-8 w-8 flex-shrink-0 flex items-center justify-center ${m.role === 'user' ? 'bg-accent-primary' : 'bg-slate-200 dark:bg-white/10'}`}>
+                        {m.role === 'user' ? <User size={14} /> : <Bot size={14} className="text-slate-600 dark:text-white" />}
                       </div>
-                      <div className={`p-3 rounded-2xl text-sm ${m.role === 'user' ? 'bg-accent-primary text-white rounded-tr-none' : 'bg-white/10 text-white/90 rounded-tl-none border border-white/10'}`}>
+                      <div className={`p-3 rounded-2xl text-sm ${m.role === 'user' ? 'bg-accent-primary text-white rounded-tr-none' : 'bg-white dark:bg-white/10 text-slate-800 dark:text-white/90 rounded-tl-none border border-slate-200 dark:border-white/10'}`}>
                         {m.content}
                       </div>
                     </div>
@@ -154,14 +154,14 @@ const AIChat = () => {
               </AnimatePresence>
               {loading && (
                 <div className="flex gap-2 animate-pulse">
-                  <div className="p-2 rounded-full h-8 w-8 bg-white/10" />
-                  <div className="p-3 rounded-2xl bg-white/10 h-10 w-24" />
+                  <div className="p-2 rounded-full h-8 w-8 bg-slate-200 dark:bg-white/10" />
+                  <div className="p-3 rounded-2xl bg-white dark:bg-white/10 h-10 w-24" />
                 </div>
               )}
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t border-white/10 bg-dark/50">
+            <div className="p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-dark/50">
               <div className="flex gap-2">
                 <input 
                   type="text" 
@@ -169,7 +169,7 @@ const AIChat = () => {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                   placeholder="Ask me anything..."
-                  className="w-full glass-input text-sm"
+                  className="w-full glass-input text-sm text-slate-800 dark:text-white bg-white dark:bg-transparent"
                 />
                 <button 
                   onClick={handleSend}

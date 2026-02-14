@@ -127,12 +127,12 @@ const HireModal = ({ isOpen, onClose }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative z-50 w-full max-w-lg bg-gradient-to-br from-slate-900 to-slate-800 p-8 border border-white/20 shadow-2xl rounded-2xl max-h-[85vh] overflow-y-auto"
+            className="relative z-50 w-full max-w-lg bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-800 p-8 border border-gray-200 dark:border-white/20 shadow-2xl rounded-2xl max-h-[85vh] overflow-y-auto"
           >
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-lg transition-colors"
+              className="absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors text-gray-500 dark:text-white"
             >
               <X size={20} />
             </button>            {/* Content */}
@@ -146,8 +146,8 @@ const HireModal = ({ isOpen, onClose }) => {
                   className="space-y-6"
                 >
                   <div>
-                    <h2 className="text-2xl font-bold mb-2">Get In Touch</h2>
-                    <p className="text-white/60">Choose how you'd like to connect with me</p>
+                    <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Get In Touch</h2>
+                    <p className="text-gray-600 dark:text-white/60">Choose how you'd like to connect with me</p>
                   </div>
 
                   <div className="space-y-4">
@@ -163,8 +163,8 @@ const HireModal = ({ isOpen, onClose }) => {
                           <Mail size={20} className="text-accent-primary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-white mb-1">Send Email</h3>
-                          <p className="text-sm text-white/60">Direct email communication</p>
+                          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Send Email</h3>
+                          <p className="text-sm text-gray-600 dark:text-white/60">Direct email communication</p>
                         </div>
                       </div>
                     </motion.button>
@@ -181,8 +181,8 @@ const HireModal = ({ isOpen, onClose }) => {
                           <Calendar size={20} className="text-accent-secondary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-white mb-1">Book a Call</h3>
-                          <p className="text-sm text-white/60">Schedule via Google Calendar</p>
+                          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Book a Call</h3>
+                          <p className="text-sm text-gray-600 dark:text-white/60">Schedule via Google Calendar</p>
                         </div>
                       </div>
                     </motion.button>
@@ -206,26 +206,26 @@ const HireModal = ({ isOpen, onClose }) => {
                   </button>
 
                   <div>
-                    <h2 className="text-2xl font-bold mb-2">Email Me</h2>
-                    <p className="text-white/60">Reach out directly for any inquiries</p>
+                    <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Email Me</h2>
+                    <p className="text-gray-600 dark:text-white/60">Reach out directly for any inquiries</p>
                   </div>
 
                   <motion.div
                     whileHover={{ borderColor: 'rgba(99, 102, 241, 0.7)' }}
-                    className="p-4 glass-card border border-white/20 rounded-xl transition-colors"
+                    className="p-4 glass-card border border-gray-200 dark:border-white/20 rounded-xl transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <Mail className="text-accent-primary" size={20} />
-                        <span className="font-mono text-sm break-all">{email}</span>
+                        <span className="font-mono text-sm break-all text-gray-800 dark:text-white">{email}</span>
                       </div>
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={copyEmail}
-                        className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors text-gray-500 dark:text-white"
                       >
-                        <Copy size={18} className={emailCopied ? 'text-green-400' : 'text-white'} />
+                        <Copy size={18} className={emailCopied ? 'text-green-500' : 'currentColor'} />
                       </motion.button>
                     </div>
                   </motion.div>
@@ -267,40 +267,40 @@ const HireModal = ({ isOpen, onClose }) => {
                   </button>
 
                   <div>
-                    <h2 className="text-2xl font-bold mb-2">Schedule a Call</h2>
-                    <p className="text-white/60">I'll send you a Google Calendar invite</p>
+                    <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Schedule a Call</h2>
+                    <p className="text-gray-600 dark:text-white/60">I'll send you a Google Calendar invite</p>
                   </div>
 
                   <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                     {/* Recruiter Name */}
                     <div>
-                      <label className="block text-sm font-medium mb-2">Your Name</label>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-white/80">Your Name</label>
                       <input
                         type="text"
                         name="recruiterName"
                         value={bookingData.recruiterName}
                         onChange={handleInputChange}
                         placeholder="John Doe"
-                        className="w-full glass-input text-white bg-white/5 border border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all"
+                        className="w-full glass-input text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all"
                       />
                     </div>
 
                     {/* Recruiter Email */}
                     <div>
-                      <label className="block text-sm font-medium mb-2">Your Email</label>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-white/80">Your Email</label>
                       <input
                         type="email"
                         name="recruiterEmail"
                         value={bookingData.recruiterEmail}
                         onChange={handleInputChange}
                         placeholder="recruiter@company.com"
-                        className="w-full glass-input text-white bg-white/5 border border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all"
+                        className="w-full glass-input text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all"
                       />
                     </div>
 
                     {/* Date */}
                     <div>
-                      <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                      <label className="block text-sm font-medium mb-2 flex items-center gap-2 text-gray-700 dark:text-white/80">
                         <Calendar size={16} />
                         Date
                       </label>
@@ -310,13 +310,13 @@ const HireModal = ({ isOpen, onClose }) => {
                         value={bookingData.date}
                         onChange={handleInputChange}
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full glass-input text-white bg-white/5 border border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all"
+                        className="w-full glass-input text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all"
                       />
                     </div>
 
                     {/* Time */}
                     <div>
-                      <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                      <label className="block text-sm font-medium mb-2 flex items-center gap-2 text-gray-700 dark:text-white/80">
                         <Clock size={16} />
                         Time
                       </label>
@@ -325,29 +325,29 @@ const HireModal = ({ isOpen, onClose }) => {
                         name="time"
                         value={bookingData.time}
                         onChange={handleInputChange}
-                        className="w-full glass-input text-white bg-white/5 border border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all"
+                        className="w-full glass-input text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all"
                       />
                     </div>
 
                     {/* Duration */}
                     <div>
-                      <label className="block text-sm font-medium mb-2">Duration (minutes)</label>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-white/80">Duration (minutes)</label>
                       <select
                         name="duration"
                         value={bookingData.duration}
                         onChange={handleInputChange}
-                        className="w-full glass-input text-white bg-white/5 border border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all"
+                        className="w-full glass-input text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all"
                       >
-                        <option value="15">15 minutes</option>
-                        <option value="30">30 minutes</option>
-                        <option value="45">45 minutes</option>
-                        <option value="60">1 hour</option>
+                        <option value="15" className="bg-white dark:bg-slate-800">15 minutes</option>
+                        <option value="30" className="bg-white dark:bg-slate-800">30 minutes</option>
+                        <option value="45" className="bg-white dark:bg-slate-800">45 minutes</option>
+                        <option value="60" className="bg-white dark:bg-slate-800">1 hour</option>
                       </select>
                     </div>
 
                     {/* Purpose */}
                     <div>
-                      <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                      <label className="block text-sm font-medium mb-2 flex items-center gap-2 text-gray-700 dark:text-white/80">
                         <FileText size={16} />
                         Purpose of Call
                       </label>
@@ -357,7 +357,7 @@ const HireModal = ({ isOpen, onClose }) => {
                         onChange={handleInputChange}
                         placeholder="e.g., Discuss full-stack position, ML project collaboration..."
                         rows="3"
-                        className="w-full glass-input text-white bg-white/5 border border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all resize-none"
+                        className="w-full glass-input text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-lg px-4 py-2 focus:border-accent-secondary focus:ring-2 focus:ring-accent-secondary/50 outline-none transition-all resize-none"
                       />
                     </div>
                   </div>
@@ -391,8 +391,8 @@ const HireModal = ({ isOpen, onClose }) => {
                   </motion.div>
 
                   <div>
-                    <h2 className="text-2xl font-bold mb-2">Thanks for Contacting Lakshita Gupta!</h2>
-                    <p className="text-white/60">Your call is booked! 📅</p>
+                    <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Thanks for Contacting Lakshita Gupta!</h2>
+                    <p className="text-gray-600 dark:text-white/60">Your call is booked! 📅</p>
                   </div>
 
                   <motion.div
@@ -401,15 +401,15 @@ const HireModal = ({ isOpen, onClose }) => {
                     transition={{ delay: 0.3 }}
                     className="p-4 glass-card border border-accent-secondary/30 rounded-xl"
                   >
-                    <p className="text-sm text-white/80">
+                    <p className="text-sm text-gray-700 dark:text-white/80">
                       📧 Calendar invite sent to {bookingData.recruiterEmail}
                     </p>
-                    <p className="text-xs text-white/60 mt-2">
+                    <p className="text-xs text-gray-500 dark:text-white/60 mt-2">
                       You'll also receive a notification once this is confirmed.
                     </p>
                   </motion.div>
 
-                  <p className="text-sm text-white/60">Closing in 3 seconds...</p>
+                  <p className="text-sm text-gray-500 dark:text-white/60">Closing in 3 seconds...</p>
                 </motion.div>
               )}
             </AnimatePresence>
