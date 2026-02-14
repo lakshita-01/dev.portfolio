@@ -10,21 +10,23 @@ require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
+  pool: false, // Explicitly disable pooling to avoid callback issues
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
   }
 });
 
-// Verify transporter on startup with timeout
+// Verify transporter on startup
 if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD && process.env.EMAIL_USER !== 'your-email@gmail.com') {
-  transporter.verify({ timeout: 5000 }, (error) => {
-    if (error) {
-      logger.warn('Email transporter verification failed - emails will be skipped', { error: error.message });
-    } else {
+  (async () => {
+    try {
+      await transporter.verify();
       logger.info('Email transporter ready');
+    } catch (error) {
+      logger.warn('Email transporter verification failed - emails will be skipped', { error: error.message });
     }
-  });
+  })();
 }
 
 router.post('/login', [
@@ -249,18 +251,10 @@ router.post('/test-email', async (req, res) => {
       });
     }
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: emailUser,
-        pass: emailPassword
-      }
-    });
-
     await transporter.verify();
 
     const testResult = await transporter.sendMail({
-      from: emailUser,
+      from: `"Portfolio Test" <${emailUser}>`,
       to: 'lakshitagupta9@gmail.com',
       subject: 'Test Email from Portfolio',
       html: '<h1>Email service is working!</h1>'
