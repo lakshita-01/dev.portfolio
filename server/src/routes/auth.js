@@ -140,14 +140,11 @@ router.post('/book-call', async (req, res) => {
       return res.status(500).json({ message: 'Email service not configured. Please contact admin.' });
     }
 
-    const sendSmtpEmail = new brevo.SendSmtpEmail();
-    sendSmtpEmail.sender = { email: 'lakshitagupta9@gmail.com', name: 'Lakshita Gupta' };
-    sendSmtpEmail.to = [
-      { email: recruiterEmail, name: recruiterName },
-      { email: 'lakshitagupta9@gmail.com', name: 'Lakshita Gupta' }
-    ];
-    sendSmtpEmail.subject = 'Call Scheduled with Lakshita Gupta';
-    sendSmtpEmail.htmlContent = `
+    const recruiterEmailObj = new brevo.SendSmtpEmail();
+    recruiterEmailObj.sender = { email: 'lakshitagupta9@gmail.com', name: 'Lakshita Gupta' };
+    recruiterEmailObj.to = [{ email: recruiterEmail, name: recruiterName }];
+    recruiterEmailObj.subject = 'Call Scheduled with Lakshita Gupta';
+    recruiterEmailObj.htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
         <h2 style="color: #6366f1;">Call Confirmed! 🎉</h2>
         <p>Hi ${recruiterName},</p>
@@ -163,9 +160,31 @@ router.post('/book-call', async (req, res) => {
       </div>
     `;
 
+    const adminEmailObj = new brevo.SendSmtpEmail();
+    adminEmailObj.sender = { email: 'lakshitagupta9@gmail.com', name: 'Portfolio System' };
+    adminEmailObj.to = [{ email: 'lakshitagupta9@gmail.com', name: 'Lakshita Gupta' }];
+    adminEmailObj.subject = `New Call Scheduled - ${recruiterName}`;
+    adminEmailObj.htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <h2 style="color: #06b6d4;">New Call Booked 📞</h2>
+        <div style="background: #f0fdfa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #06b6d4;">
+          <p><strong>Recruiter Name:</strong> ${recruiterName}</p>
+          <p><strong>Recruiter Email:</strong> ${recruiterEmail}</p>
+          <p><strong>Date:</strong> ${bookingDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <p><strong>Time:</strong> ${time}</p>
+          <p><strong>Duration:</strong> ${duration} minutes</p>
+          <p><strong>Purpose:</strong> ${purpose}</p>
+        </div>
+        <p>Please check your schedule and prepare for the call.</p>
+      </div>
+    `;
+
     try {
-      await brevoApi.sendTransacEmail(sendSmtpEmail);
-      logger.info('[Book Call] Emails sent successfully via Brevo');
+      await Promise.all([
+        brevoApi.sendTransacEmail(recruiterEmailObj),
+        brevoApi.sendTransacEmail(adminEmailObj)
+      ]);
+      logger.info('[Book Call] All emails sent successfully via Brevo');
       res.status(200).json({
         message: 'Call booked successfully! Check your email for confirmation.',
         success: true
