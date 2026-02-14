@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../context/ThemeContext';
 
 const techStackData = [
   {
@@ -19,7 +20,7 @@ const techStackData = [
   }
 ];
 
-const getSkillIcon = (name, isInvert = false, size = 'default') => {
+const getSkillIcon = (name, isDark = true, isInvert = false, size = 'default') => {
   const sizeClass = size === 'large' ? 'w-12 h-12 md:w-20 md:h-20' : 'w-10 h-10 md:w-16 md:h-16';
   const iconMap = {
     "C++": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
@@ -54,7 +55,8 @@ const getSkillIcon = (name, isInvert = false, size = 'default') => {
     "Jupyter Notebook": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg"
   };
 
-  const shouldInvert = iconMap[name] && iconMap[name].includes("simple-icons") || isInvert;
+  const isSimpleIcon = iconMap[name] && iconMap[name].includes("simple-icons");
+  const shouldInvert = (isSimpleIcon && isDark) || isInvert;
 
   const src = iconMap[name] || "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/codesandbox.svg";
 
@@ -83,6 +85,7 @@ const chunkArray = (arr, size) => {
 const rows = chunkArray(allSkills, Math.ceil(allSkills.length / 3));
 
 const MarqueeRow = ({ items, direction = "left", speed = 40 }) => {
+  const { isDark } = useTheme();
   return (
     <div
       className="flex overflow-hidden w-full"
@@ -111,7 +114,7 @@ const MarqueeRow = ({ items, direction = "left", speed = 40 }) => {
             className="flex items-center gap-2 px-4 py-2 bg-slate-200/50 dark:bg-gradient-to-r dark:from-black/20 dark:to-black/40 border border-gray-200 dark:border-white/5 rounded-xl hover:border-accent-primary/50 transition-all duration-300 group cursor-pointer shadow-sm"
           >
             <div className="flex items-center justify-center w-6 h-6 opacity-80 group-hover:opacity-100 transition-opacity">
-              {getSkillIcon(item)}
+              {getSkillIcon(item, isDark)}
             </div>
             <span className="text-gray-600 dark:text-white/60 text-xs font-medium group-hover:text-black dark:group-hover:text-white transition-colors uppercase tracking-tight">
               {item}
@@ -124,6 +127,7 @@ const MarqueeRow = ({ items, direction = "left", speed = 40 }) => {
 };
 
 const SkillsRadar = () => {
+  const { isDark } = useTheme();
   const [isRevealed, setIsRevealed] = useState(false);
 
   const handleButtonClick = () => {
@@ -281,7 +285,7 @@ const SkillsRadar = () => {
                         >
                           <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                           <div className="relative z-10 transform group-hover:scale-110 transition-transform duration-500">
-                            {getSkillIcon(skill, false, 'large')}
+                            {getSkillIcon(skill, isDark, false, 'large')}
                           </div>
                           <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 bg-white text-black text-[11px] font-bold py-1.5 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap z-50 pointer-events-none translate-y-2 group-hover:translate-y-0 shadow-xl">
                             {skill}

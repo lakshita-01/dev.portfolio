@@ -11,9 +11,14 @@ require('dotenv').config();
 // Initialize Brevo
 let brevoApi;
 if (process.env.BREVO_API_KEY) {
-  brevoApi = new brevo.TransactionalEmailsApi();
-  brevoApi.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
-  logger.info('Brevo initialized');
+  try {
+    brevoApi = new brevo.TransactionalEmailsApi();
+    // Use the direct authentication assignment which is more robust
+    brevoApi.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY.trim();
+    logger.info('Brevo initialized');
+  } catch (err) {
+    logger.error('Failed to initialize Brevo', { error: err.message });
+  }
 } else {
   logger.warn('Brevo API key not configured');
 }
@@ -166,9 +171,15 @@ router.post('/book-call', async (req, res) => {
         success: true
       });
     } catch (emailError) {
-      logger.error('[Book Call] Brevo error', { error: emailError.message });
+      const errorMsg = emailError.response?.body?.message || emailError.message;
+      logger.error('[Book Call] Brevo error', { 
+        error: errorMsg,
+        statusCode: emailError.response?.statusCode,
+        details: emailError.response?.body
+      });
       return res.status(500).json({ 
-        message: 'Failed to send confirmation emails. Please contact directly at lakshitagupta9@gmail.com'
+        message: 'Failed to send confirmation emails. Please contact directly at lakshitagupta9@gmail.com',
+        debug: process.env.NODE_ENV === 'development' ? errorMsg : undefined
       });
     }
   } catch (error) {
@@ -202,10 +213,15 @@ router.post('/test-email', async (req, res) => {
       message: 'Test email sent successfully via Brevo'
     });
   } catch (error) {
-    logger.error('Test email error', { error: error.message });
+    const errorMsg = error.response?.body?.message || error.message;
+    logger.error('Test email error', { 
+      error: errorMsg,
+      statusCode: error.response?.statusCode,
+      details: error.response?.body
+    });
     res.status(500).json({
       success: false,
-      message: error.message
+      message: errorMsg
     });
   }
 });
