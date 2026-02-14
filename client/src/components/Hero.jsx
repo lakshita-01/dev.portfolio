@@ -204,7 +204,7 @@ const Hero = () => {
             <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Let's Connect!</h3>
             <div className="space-y-4">
               <a
-                href="https://linkedin.com/in/yourprofile"
+                href="https://www.linkedin.com/in/lakshita-gupta01/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors"
@@ -213,16 +213,16 @@ const Hero = () => {
                 <span className="text-gray-700 font-medium">LinkedIn</span>
               </a>
               <a
-                href="https://github.com/yourusername"
+                href="https://github.com/lakshita-01"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
               >
-                <Github className="text-white" size={24} />
+                <Github className="text-black" size={24} />
                 <span className="text-gray-700 font-medium">GitHub</span>
               </a>
               <a
-                href="mailto:your.email@example.com"
+                href="mailto:lakshitagupta9@gmail.com"
                 className="flex items-center gap-3 p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-colors"
               >
                 <Mail className="text-green-600" size={24} />
