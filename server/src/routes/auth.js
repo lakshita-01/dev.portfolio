@@ -9,12 +9,16 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  pool: false, // Explicitly disable pooling to avoid callback issues
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
-  }
+  },
+  connectionTimeout: 10000, // 10 seconds
+  greetingTimeout: 10000,
+  socketTimeout: 30000
 });
 
 // Verify transporter on startup
@@ -212,17 +216,22 @@ END:VCALENDAR`)
         `
       };
 
-      // Send emails in background with timeout
-      Promise.race([
-        Promise.all([
-          transporter.sendMail(recruiterMailOptions),
-          transporter.sendMail(adminMailOptions)
-        ]),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Email timeout')), 30000))
-      ]).then(() => {
-        logger.info('[Book Call] Emails sent successfully');
-      }).catch(emailError => {
-        logger.warn('[Book Call] Email failed or timed out', { error: emailError.message });
+      // Send recruiter email
+      transporter.sendMail(recruiterMailOptions, (error, info) => {
+        if (error) {
+          logger.error('[Book Call] Recruiter email failed', { error: error.message });
+        } else {
+          logger.info('[Book Call] Recruiter email sent', { messageId: info.messageId });
+        }
+      });
+
+      // Send admin email
+      transporter.sendMail(adminMailOptions, (error, info) => {
+        if (error) {
+          logger.error('[Book Call] Admin email failed', { error: error.message });
+        } else {
+          logger.info('[Book Call] Admin email sent', { messageId: info.messageId });
+        }
       });
     } else {
       logger.warn('[Book Call] Email credentials not configured properly');
