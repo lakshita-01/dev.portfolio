@@ -12,6 +12,7 @@
     "render-build": "npm install && cd client && npm install && npm run build"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^3.0.1",
     "@openrouter/sdk": "^0.4.0",
     "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",

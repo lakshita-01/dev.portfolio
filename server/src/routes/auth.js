@@ -5,32 +5,17 @@ const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const logger = require('../utils/logger');
-const nodemailer = require('nodemailer');
+const brevo = require('@getbrevo/brevo');
 require('dotenv').config();
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
-  },
-  connectionTimeout: 10000, // 10 seconds
-  greetingTimeout: 10000,
-  socketTimeout: 30000
-});
-
-// Verify transporter on startup
-if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD && process.env.EMAIL_USER !== 'your-email@gmail.com') {
-  (async () => {
-    try {
-      await transporter.verify();
-      logger.info('Email transporter ready');
-    } catch (error) {
-      logger.warn('Email transporter verification failed - emails will be skipped', { error: error.message });
-    }
-  })();
+// Initialize Brevo
+let brevoApi;
+if (process.env.BREVO_API_KEY) {
+  brevoApi = new brevo.TransactionalEmailsApi();
+  brevoApi.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+  logger.info('Brevo initialized');
+} else {
+  logger.warn('Brevo API key not configured');
 }
 
 router.post('/login', [
@@ -145,97 +130,51 @@ router.post('/book-call', async (req, res) => {
       return res.status(400).json({ message: 'Invalid date or time format' });
     }
 
-    const emailUser = process.env.EMAIL_USER;
-    const emailPassword = process.env.EMAIL_PASSWORD;
-
-    if (!emailUser || !emailPassword || emailUser === 'your-email@gmail.com') {
-      logger.error('[Book Call] Email not configured');
+    if (!brevoApi) {
+      logger.error('[Book Call] Brevo not configured');
       return res.status(500).json({ message: 'Email service not configured. Please contact admin.' });
     }
 
-    const recruiterMailOptions = {
-      from: `"Lakshita Gupta" <${emailUser}>`,
-      to: recruiterEmail,
-      replyTo: emailUser,
-      subject: 'Call Scheduled with Lakshita Gupta',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-          <h2 style="color: #6366f1;">Call Confirmed! 🎉</h2>
-          <p>Hi ${recruiterName},</p>
-          <p>Your call with Lakshita Gupta has been scheduled:</p>
-          <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #6366f1;">
-            <p><strong>Date:</strong> ${bookingDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            <p><strong>Time:</strong> ${time}</p>
-            <p><strong>Duration:</strong> ${duration} minutes</p>
-            <p><strong>Purpose:</strong> ${purpose}</p>
-          </div>
-          <p>A calendar invitation has been attached to this email.</p>
-          <p>Best regards,<br>Lakshita Gupta</p>
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
+    sendSmtpEmail.sender = { email: 'lakshitagupta9@gmail.com', name: 'Lakshita Gupta' };
+    sendSmtpEmail.to = [
+      { email: recruiterEmail, name: recruiterName },
+      { email: 'lakshitagupta9@gmail.com', name: 'Lakshita Gupta' }
+    ];
+    sendSmtpEmail.subject = 'Call Scheduled with Lakshita Gupta';
+    sendSmtpEmail.htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <h2 style="color: #6366f1;">Call Confirmed! 🎉</h2>
+        <p>Hi ${recruiterName},</p>
+        <p>Your call with Lakshita Gupta has been scheduled:</p>
+        <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #6366f1;">
+          <p><strong>Date:</strong> ${bookingDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <p><strong>Time:</strong> ${time}</p>
+          <p><strong>Duration:</strong> ${duration} minutes</p>
+          <p><strong>Purpose:</strong> ${purpose}</p>
         </div>
-      `,
-      icalEvent: {
-        method: 'REQUEST',
-        content: `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Lakshita Gupta//Portfolio//EN
-METHOD:REQUEST
-BEGIN:VEVENT
-UID:${Date.now()}@lakshitagupta.com
-DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-DTSTART:${bookingDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-DURATION:PT${duration}M
-SUMMARY:Call with Lakshita Gupta: ${purpose}
-DESCRIPTION:${purpose}
-ORGANIZER;CN=Lakshita Gupta:mailto:${emailUser}
-ATTENDEE;CN=${recruiterName};RSVP=TRUE:mailto:${recruiterEmail}
-END:VEVENT
-END:VCALENDAR`
-      }
-    };
+        <p>Looking forward to connecting with you!</p>
+        <p>Best regards,<br>Lakshita Gupta<br>📧 lakshitagupta9@gmail.com</p>
+      </div>
+    `;
 
-    const adminMailOptions = {
-      from: emailUser,
-      to: emailUser,
-      subject: `New Call Scheduled - ${recruiterName}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-          <h2 style="color: #06b6d4;">New Call Booked 📞</h2>
-          <div style="background: #f0fdfa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #06b6d4;">
-            <p><strong>Name:</strong> ${recruiterName}</p>
-            <p><strong>Email:</strong> ${recruiterEmail}</p>
-            <p><strong>Date:</strong> ${bookingDate.toLocaleDateString()}</p>
-            <p><strong>Time:</strong> ${time}</p>
-            <p><strong>Duration:</strong> ${duration} minutes</p>
-            <p><strong>Purpose:</strong> ${purpose}</p>
-          </div>
-        </div>
-      `
-    };
-
-    // Send both emails and wait for completion
     try {
-      await Promise.all([
-        transporter.sendMail(recruiterMailOptions),
-        transporter.sendMail(adminMailOptions)
-      ]);
-      
-      logger.info('[Book Call] Both emails sent successfully');
+      await brevoApi.sendTransacEmail(sendSmtpEmail);
+      logger.info('[Book Call] Emails sent successfully via Brevo');
       res.status(200).json({
         message: 'Call booked successfully! Check your email for confirmation.',
         success: true
       });
     } catch (emailError) {
-      logger.error('[Book Call] Email sending failed', { error: emailError.message });
+      logger.error('[Book Call] Brevo error', { error: emailError.message });
       return res.status(500).json({ 
-        message: 'Failed to send confirmation emails. Please try again or contact directly at lakshitagupta9@gmail.com',
-        error: emailError.message
+        message: 'Failed to send confirmation emails. Please contact directly at lakshitagupta9@gmail.com'
       });
     }
   } catch (error) {
     logger.error('[Book Call] Critical Error', { error: error.message });
     return res.status(500).json({ 
-      message: 'Failed to book call. Please try again.',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: 'Failed to book call. Please try again.'
     });
   }
 });
@@ -243,32 +182,27 @@ END:VCALENDAR`
 // Test email endpoint
 router.post('/test-email', async (req, res) => {
   try {
-    const emailUser = process.env.EMAIL_USER;
-    const emailPassword = process.env.EMAIL_PASSWORD;
-
-    if (emailUser === 'your-email@gmail.com' || emailPassword === 'your-app-password') {
+    if (!brevoApi) {
       return res.status(400).json({
         success: false,
-        message: 'Email credentials not configured. Please update .env file with valid Gmail credentials.'
+        message: 'Brevo API key not configured.'
       });
     }
 
-    await transporter.verify();
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
+    sendSmtpEmail.sender = { email: 'lakshitagupta9@gmail.com', name: 'Portfolio Test' };
+    sendSmtpEmail.to = [{ email: 'lakshitagupta9@gmail.com' }];
+    sendSmtpEmail.subject = 'Test Email from Portfolio';
+    sendSmtpEmail.htmlContent = '<h1>Email service is working!</h1>';
 
-    const testResult = await transporter.sendMail({
-      from: `"Portfolio Test" <${emailUser}>`,
-      to: 'lakshitagupta9@gmail.com',
-      subject: 'Test Email from Portfolio',
-      html: '<h1>Email service is working!</h1>'
-    });
+    await brevoApi.sendTransacEmail(sendSmtpEmail);
 
     res.json({
       success: true,
-      message: 'Test email sent successfully',
-      messageId: testResult.messageId
+      message: 'Test email sent successfully via Brevo'
     });
   } catch (error) {
-    console.error('Test email error:', error);
+    logger.error('Test email error', { error: error.message });
     res.status(500).json({
       success: false,
       message: error.message
