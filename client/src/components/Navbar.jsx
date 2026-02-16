@@ -60,7 +60,7 @@ const Navbar = () => {
             >
               <Terminal className="text-vibrant-light-purple dark:text-vibrant-neon-purple group-hover:text-vibrant-light-pink dark:group-hover:text-vibrant-neon-pink transition-colors" />
             </motion.div>
-            <span className="bg-gradient-to-r from-vibrant-light-purple to-vibrant-light-pink dark:from-vibrant-neon-purple dark:via-vibrant-neon-pink dark:to-vibrant-neon-cyan bg-clip-text text-transparent">DEV<span className="text-vibrant-light-purple dark:text-vibrant-neon-cyan">.</span>PORTFOLIO</span>
+            <span className="bg-gradient-to-r from-vibrant-light-purple to-vibrant-light-pink dark:from-vibrant-neon-purple dark:via-vibrant-neon-pink dark:to-vibrant-neon-cyan bg-clip-text text-transparent">PORT<span className="text-vibrant-light-purple dark:text-vibrant-neon-cyan">.</span>2109</span>
           </Link>
         </motion.div>
         
