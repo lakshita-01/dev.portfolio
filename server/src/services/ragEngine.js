@@ -1,9 +1,9 @@
-const axios = require("axios");
+const puter = require("puter");
 require("dotenv").config();
 const { loadResumeText } = require("./resumeLoader");
 
 let resumeContext = "";
-let authToken = null;
+let isAuthenticated = false;
 let initializationPromise = null;
 let lastResumeLoadTime = null;
 
@@ -16,36 +16,23 @@ const initializeOnStartup = async () => {
     lastResumeLoadTime = new Date();
     console.log('[Puter] Resume loaded successfully at', lastResumeLoadTime.toISOString());
     console.log('[Puter] Resume length:', resumeContext.length, 'characters');
-    
-    // Get Puter auth token if credentials provided
+
+    // Optional Puter auth using username/password from env
     const username = process.env.PUTER_USERNAME;
     const password = process.env.PUTER_PASSWORD;
-    
-    if (username && password && username !== 'your_puter_username') {
+
+    if (username && password) {
       try {
-        const response = await axios.post('https://api.puter.com/auth/signin', {
-          username,
-          password
-        }, {
-          headers: { 
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
-        });
-        
-        if (response.data && response.data.token) {
-          authToken = response.data.token;
-          console.log('[Puter] Authenticated successfully');
-        } else {
-          console.log('[Puter] Using anonymous mode (no token received)');
-        }
-      } catch (error) {
-        console.log('[Puter] Auth failed, using anonymous mode');
+        await puter.auth.signIn(username, password);
+        isAuthenticated = true;
+        console.log('[Puter] Authenticated successfully');
+      } catch (err) {
+        console.log('[Puter] Puter auth failed, continuing anonymously');
       }
     } else {
-      console.log('[Puter] Using anonymous mode (no credentials)');
+      console.log('[Puter] No Puter credentials provided — running in anonymous mode');
     }
-    
+
     console.log('[Puter] AI Assistant ready');
   } catch (error) {
     console.error('[Puter] Initialization failed:', error.message);
@@ -59,16 +46,16 @@ const getChatResponse = async (userMessage) => {
   try {
     // Wait for initialization to complete if still in progress
     await initializationPromise;
-    
+
     // Force reload resume on every request to prevent caching
     console.log('[Puter] Reloading resume for fresh context...');
     resumeContext = await loadResumeText();
     console.log('[Puter] Resume reloaded, length:', resumeContext.length);
     console.log('[Puter] Resume snippet:', resumeContext.substring(0, 100).replace(/\n/g, ' '));
-   
+
     const prompt = `
 You are an AI Portfolio Assistant representing Lakshita Gupta.
-Lakshita is actively looking for roles like Machine Learning Engineer, Software Engineer and web developer(fullstack/frontend/backend) for both internship and fulltime roles.
+Lakshita is actively looking for roles like Machine Learning Engineer, Software Engineer and web developer (fullstack/frontend/backend) for both internship and full-time roles.
 
 RULES:
 - Answer ONLY using the resume content below.
@@ -76,12 +63,6 @@ RULES:
   "That information is not available in the resume. Please contact Lakshita directly."
 - Do NOT exaggerate or assume experience.
 - Be concise and professional.
-- AT THE END of your response, ALWAYS include this exact footer:
-  ---
-  For more details, contact Lakshita:
-  📧 Email: lakshitagupta9@gmail.com
-  📅 Book a Call: Click the 'Hire Me' button in the navbar
-  🔗 LinkedIn: https://www.linkedin.com/in/lakshita-gupta01
 
 RESUME CONTENT:
 ${resumeContext}
@@ -89,18 +70,18 @@ ${resumeContext}
 User Question: ${userMessage}
 `;
 
-    // Call Puter AI API directly
-    const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
-    
-    const response = await axios.post('https://api.puter.com/drivers/call', {
-      interface: 'puter-chat-completion',
-      method: 'complete',
-      args: {
-        messages: [{ role: 'user', content: prompt }]
-      }
-    }, { headers });
+    // Use puter SDK locally (no external API key required here)
+    const aiResponse = await puter.ai.chat(prompt);
+    // puter.ai.chat may return different shapes; normalize to string
+    let reply = aiResponse?.message?.content || aiResponse?.content || (typeof aiResponse === 'string' ? aiResponse : JSON.stringify(aiResponse));
 
-    return response.data.message?.content || response.data.response || "Unable to get response.";
+    // Ensure exact footer is ALWAYS appended
+    const footer = `---\nFor more details, contact Lakshita:\n📧 Email: lakshitagupta9@gmail.com\n📅 Book a Call: Click the 'Hire Me' button in the navbar\n🔗 LinkedIn: https://www.linkedin.com/in/lakshita-gupta01`;
+    if (!reply.includes(footer)) {
+      reply = reply.trim() + "\n\n" + footer;
+    }
+
+    return reply;
 
   } catch (error) {
     console.error('[Puter] Error:', error.message);

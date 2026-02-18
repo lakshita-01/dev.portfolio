@@ -67,103 +67,63 @@ The portfolio features a vibrant color palette with full light and dark mode sup
 - ✅ **Smart Persistence**: localStorage saves user preference
 - ✅ **System Detection**: Respects OS dark mode setting on first visit
 - ✅ **Smooth Transitions**: 300ms color animations between themes
-- ✅ **Full Accessibility**: WCAG AA compliant contrast ratios
-- ✅ **Mobile Optimized**: Works perfectly on all screen sizes
+# Interactive AI Portfolio
 
-### Color Palette
+A compact, production-ready portfolio platform featuring a modern UI, theme system, real-time analytics, and an AI-powered resume assistant.
 
-**Light Mode (7 Colors)**
+**Primary features**
+- **AI Assistant (RAG)**: Retrieval-augmented chat assistant powered by `server/src/services/ragEngine.js` which uses your resume as context.
+- **Real-time analytics**: Live visitor tracking and dashboards (websockets + charts).
+- **Admin dashboard**: JWT-protected admin routes for viewing analytics and managing access.
+- **Responsive UI**: Vite + React frontend with Tailwind CSS and Framer Motion for smooth animations and glassmorphism styling.
+- **Theme system**: Light/dark mode with persistence and system preference detection (`client/src/context/ThemeContext.jsx`).
+- **Accessibility-minded**: Keyboard navigation and accessible color contrasts.
+
+## Quick setup
+
+Prerequisites: Node.js (v18+), MongoDB (local or Atlas), optional Puter/OpenAI credentials for AI features.
+
+1. Install dependencies (root):
 ```
-🟪 Purple   #9333ea   - Headings & primary text
-🟩 Pink     #db2777   - Secondary accents
-🟦 Cyan     #0891b2   - Links & interactions
-🟩 Lime     #65a30d   - Success states
-🟧 Orange   #ea580c   - Warnings
-🟦 Blue     #1d4ed8   - Information
-🟪 Violet   #7c3aed   - Alternative accent
+npm install
 ```
-
-**Dark Mode (7 Neon Colors)**
+2. Install client deps:
 ```
-🟪 Purple   #a855f7   - Primary bright accent
-🟩 Pink     #ec4899   - Secondary bright accent
-🟦 Cyan     #06b6d4   - Bright links
-🟩 Lime     #84cc16   - Bright success
-🟧 Orange   #f97316   - Bright warnings
-🟦 Blue     #3b82f6   - Bright information
-🟪 Violet   #8b5cf6   - Bright alternative
+cd client
+npm install
+cd ..
 ```
-
-### How to Use
-
-**For End Users**
-1. Look for the Sun ☀️ or Moon 🌙 icon in the top-right navbar
-2. Click to toggle between light and dark modes
-3. Your preference is automatically saved
-4. On next visit, your chosen theme will be restored
-
-**For Developers**
-Use the `useTheme` hook to access theme state in any component:
-
-```jsx
-import { useTheme } from '../context/ThemeContext';
-
-function MyComponent() {
-  const { isDark, toggleTheme } = useTheme();
-  
-  return (
-    <div className="bg-vibrant-lightBg dark:bg-vibrant-darkBg
-                    text-gray-900 dark:text-white
-                    transition-colors duration-300">
-      {isDark ? 'Dark Mode Active' : 'Light Mode Active'}
-    </div>
-  );
-}
+3. Create `.env` in the root with the required vars (example):
+```
+PORT=5000
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+PUTER_USERNAME=your_user      # optional
+PUTER_PASSWORD=your_pass      # optional
 ```
 
-### Tailwind Classes for Themes
-
-```css
-/* Text Colors */
-text-vibrant-light-purple           /* Light mode purple */
-dark:text-vibrant-neon-purple       /* Dark mode neon purple */
-
-/* Backgrounds */
-bg-vibrant-lightBg                  /* Light background */
-dark:bg-vibrant-darkBg              /* Dark background */
-
-/* Smooth Transitions */
-transition-colors duration-300      /* Apply to all theme-aware elements */
-
-/* Glass Effect Cards */
-glass-card                          /* Already supports both themes */
-glass-input                         /* Already supports both themes */
+4. Start dev servers:
+```
+npm run dev
 ```
 
-### Technical Implementation
+Frontend: http://localhost:5173 — Backend: http://localhost:5000
 
-**Files Modified:**
-- `client/tailwind.config.js` - Added vibrant color palette & dark mode configuration
-- `client/src/index.css` - Updated CSS for light/dark mode support
-- `client/src/App.jsx` - Wrapped with ThemeProvider
-- `client/src/components/Navbar.jsx` - Added theme toggle button
+## Project layout (key files)
+- `server/` — Express API, Socket.IO, Mongoose models
+  - `server/src/routes/chat.js` — chat route that uses `ragEngine.js`
+  - `server/src/services/ragEngine.js` — AI assistant (RAG)
+- `client/` — Vite + React app
+  - `client/src/components/AIChat.jsx` — chat UI
+  - `client/src/context/ThemeContext.jsx` — theme provider
 
-**New Component:**
-- `client/src/context/ThemeContext.jsx` - Global theme state management
+## Cleanup performed
+- Removed obsolete file: `server/src/services/ragEngine_old.js` (not referenced).
 
-### How It Works
+## Notes & troubleshooting
+- If the AI assistant doesn't respond, check your Puter/OpenAI credentials and network access.
+- If the admin dashboard is empty, ensure MongoDB is running and an admin user exists.
 
-1. **On First Visit**: System checks for saved preference in localStorage, then checks OS preference
-2. **Default**: Dark mode is applied if no preference is found
-3. **Theme Switch**: Clicking the toggle button updates theme state and adds/removes `dark` class from HTML
-4. **Persistence**: User preference is saved to localStorage automatically
-5. **Styling**: Tailwind CSS uses the `dark:` prefix to apply dark mode styles
-
-## 💡 Troubleshooting
-- **AI not responding?** Ensure your OpenAI key is valid and has credits.
-- **Theme not toggling?** Check that the toggle button is visible in the navbar (should show Sun/Moon icon)
-- **Theme not persisting?** Verify that localStorage is enabled in your browser
-- **Colors not displaying?** Run `npm run dev` to rebuild Tailwind CSS
-- **Dashboard blank?** Make sure MongoDB is running and you have logged in via `/login`.
-- **Styling issues?** Run `npm run dev` to ensure PostCSS is processing Tailwind classes.
-#
+If you want, I can now:
+- run a static analysis to find more unused imports/files, or
+- prune additional unused docs and run a quick client build to verify everything.
